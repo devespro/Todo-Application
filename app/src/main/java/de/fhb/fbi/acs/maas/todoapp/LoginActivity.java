@@ -1,4 +1,4 @@
-package com.deves.testtodoapplication;
+package de.fhb.fbi.acs.maas.todoapp;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,6 +14,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.deves.maus.R;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

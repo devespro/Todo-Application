@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TestToDoApplication</string>
+    <string name="app_name">ToDoApplication</string>
 
     <!-- Error messages-->
     <string name="error_massage_empty_email">Email must be not empty</string>

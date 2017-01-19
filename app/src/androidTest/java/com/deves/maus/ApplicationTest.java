@@ -1,4 +1,4 @@
-package com.deves.testtodoapplication;
+package com.deves.maus;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

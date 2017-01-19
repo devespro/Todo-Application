@@ -1,4 +1,4 @@
-package com.deves.testtodoapplication;
+package de.fhb.fbi.acs.maas.todoapp;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.deves.maus.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;

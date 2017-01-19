@@ -1,4 +1,4 @@
-package com.deves.testtodoapplication;
+package com.deves.maus;
 
 import org.junit.Test;
 
