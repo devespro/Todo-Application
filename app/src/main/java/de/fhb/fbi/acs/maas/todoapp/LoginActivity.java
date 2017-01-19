@@ -169,7 +169,7 @@ public class LoginActivity extends Activity {
      */
     private void startToDoActivity(String email, int password){
         if (isValidLogin(email, password)) {
-            Intent intent = new Intent(this, ToToActivity.class);
+            Intent intent = new Intent(this, TodoActivity.class);
             startActivity(intent);
         } else {
             errorTextView.setText(R.string.error_message_invalid_login);

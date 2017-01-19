@@ -1,7 +1,7 @@
 package de.fhb.fbi.acs.maas.todoapp.model;
 
 /**
- * Created by Esien Novruzov on 19/01/17.
+ * @author Esien Novruzov
  */
 public abstract class GenericEntity {
     protected static long ID;

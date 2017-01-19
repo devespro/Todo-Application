@@ -12,20 +12,20 @@ import android.widget.ListView;
 
 import com.deves.maus.R;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import de.fhb.fbi.acs.maas.todoapp.accessors.AbstractActivityDataAccessor;
+import de.fhb.fbi.acs.maas.todoapp.accessors.SimpleTodoitemListAccessor;
+import de.fhb.fbi.acs.maas.todoapp.accessors.TodoItemListAccessor;
+import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 
 /**
- * Created by deves on 31/10/16.
+ * @author Esien Novruzov
  */
-public class ToToActivity extends Activity {
+public class TodoActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
-
 
         if (savedInstanceState == null){
             getFragmentManager().beginTransaction().add(R.id.todo_layout, new ToDoFragment()).commit();
@@ -33,11 +33,10 @@ public class ToToActivity extends Activity {
     }
 
     public static class ToDoFragment extends ListFragment {
-        private ArrayAdapter<String> arrayAdapter;
-
-        private String[] SAMPLE_DATA = new String[]{"first","second","third","forth"};
-
-        private List<String> data = new ArrayList<>(Arrays.asList(SAMPLE_DATA));
+        /**
+         * the data accessor for the data items
+         */
+        private TodoItemListAccessor accessor;
 
         @Override
         public void onAttach(Context context) {
@@ -45,12 +44,16 @@ public class ToToActivity extends Activity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
             View view = super.onCreateView(inflater, container, savedInstanceState);
 
-            arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, data);
-            setListAdapter(arrayAdapter);
+            accessor = new SimpleTodoitemListAccessor();
+            if (accessor instanceof AbstractActivityDataAccessor){
+                ((AbstractActivityDataAccessor) accessor).setActivity(getActivity());
+            }
 
+            final ArrayAdapter<TodoItem> adapter = (ArrayAdapter)accessor.getAdapter();
+            setListAdapter(adapter);
             return view;
         }
 

@@ -15,7 +15,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="de.fhb.fbi.acs.maas.todoapp.ToToActivity"/>
+        <activity android:name="de.fhb.fbi.acs.maas.todoapp.TodoActivity"/>
     </application>
 
 </manifest>

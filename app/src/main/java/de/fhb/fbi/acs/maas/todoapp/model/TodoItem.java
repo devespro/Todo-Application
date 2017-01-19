@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * The TodoItem class represents the data model for each item in TodoApplication
- * Created by Esien Novruzov on 19/01/17.
+ * @author Esien Novruzov
  */
 public class TodoItem extends GenericEntity implements Serializable {
 
