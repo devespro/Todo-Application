@@ -6,7 +6,7 @@ import java.io.Serializable;
  * The TodoItem class represents the data model for each item in TodoApplication
  * @author Esien Novruzov
  */
-public class TodoItem extends GenericEntity implements Serializable {
+public class TodoItem extends GenericEntity implements Serializable, Comparable<TodoItem> {
 
     private String title;
     private String description;
@@ -96,6 +96,12 @@ public class TodoItem extends GenericEntity implements Serializable {
         this.setDescription(item.getDescription());
         this.setDate(item.getDate());
         this.setTime(item.getTime());
+    }
+
+    @Override
+    public int compareTo(TodoItem another) {
+        //TODO
+        return 0;
     }
 
     //TODO only for debugging reasons! Delete before submitting

@@ -27,8 +27,8 @@ public class SimpleTodoitemListAccessor extends AbstractActivityDataAccessor imp
 
 
     public SimpleTodoitemListAccessor(){
-        TodoItem newItem = new TodoItem(1,"some title","some desc",false,false,123123,123123);
-        TodoItem newItem2 = new TodoItem(2,"some title2","some desc2",false,false,123123,123123);
+        TodoItem newItem = new TodoItem(1,"some title", "some desc", false, false, 123123, 123123);
+        TodoItem newItem2 = new TodoItem(2,"some title2", "some desc2", true, false, 123123, 123123);
         items.add(newItem);
         items.add(newItem2);
     }

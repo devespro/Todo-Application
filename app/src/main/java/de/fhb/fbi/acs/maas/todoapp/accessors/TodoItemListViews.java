@@ -59,6 +59,12 @@ public class TodoItemListViews {
                 });
 
                 final CheckBox checkBox = (CheckBox)layout.findViewById(R.id.todo_item_checkbox);
+                TodoItem item = getItem(position);
+                if (item.isDone()){
+                    checkBox.setChecked(true);
+                    Log.e("MY_TAG", "onClick: checkbox is clicked" );
+                    itemView.setPaintFlags(itemView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
                 checkBox.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
