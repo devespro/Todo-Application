@@ -7,14 +7,21 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.deves.maus.R;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import de.fhb.fbi.acs.maas.todoapp.accessors.AbstractActivityDataAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.DataItemAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.IntentTodoItemAccessor;
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
+import de.fhb.fbi.acs.maas.todoapp.utility.TodoUtility;
 
 /**
  * Created by Esien Novruzov on 28/01/17.
@@ -38,20 +45,39 @@ public class ItemDetailsActivity extends Activity {
         setContentView(R.layout.todo_detailview);
 
         try {
-            // obtain the ui elements
-            final EditText itemTitle = (EditText) findViewById(R.id.item_title);
-            final EditText itemDescription = (EditText) findViewById(R.id.item_description);
-            final CheckBox itemIsFavourite = (CheckBox) findViewById(R.id.item_is_favourite_checkbox);
-            final CheckBox itemIsDone = (CheckBox) findViewById(R.id.item_is_done_checkbox);
-            Button saveButton = (Button) findViewById(R.id.saveButton);
-            Button deleteButton = (Button) findViewById(R.id.deleteButton);
-
-
             this.accessor = new IntentTodoItemAccessor();
             // if we have an ActivityDataAccessor, we pass ourselves
             if (accessor instanceof AbstractActivityDataAccessor) {
                 ((AbstractActivityDataAccessor) accessor).setActivity(this);
             }
+            // obtain the ui elements
+            final EditText itemTitle = (EditText) findViewById(R.id.item_title);
+            final EditText itemDescription = (EditText) findViewById(R.id.item_description);
+            final CheckBox itemIsFavourite = (CheckBox) findViewById(R.id.item_is_favourite_checkbox);
+            final CheckBox itemIsDone = (CheckBox) findViewById(R.id.item_is_done_checkbox);
+            final DatePicker itemDate = (DatePicker) findViewById(R.id.item_date_picker);
+            final TextView dateAsText = (TextView) findViewById(R.id.date_as_text);
+            Button saveButton = (Button) findViewById(R.id.saveButton);
+            Button deleteButton = (Button) findViewById(R.id.deleteButton);
+            TodoItem todoItem = accessor.readItem();
+
+            if (todoItem != null && todoItem.getDate() != 0) {
+                dateAsText.setText(TodoUtility.formatDate(todoItem.getDate()));
+            }
+            Calendar calendar = todoItem == null ? Calendar.getInstance() : TodoUtility.getCalendarFromLong(todoItem.getDate());
+
+            itemDate.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+
+                @Override
+                public void onDateChanged(DatePicker view, int year, int monthOfYear,
+                                          int dayOfMonth) {
+                    GregorianCalendar calendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+
+                    //dateAsText.setText(calendar.toString());
+                    Toast.makeText(ItemDetailsActivity.this, "Selected date: " + calendar.toString(), Toast.LENGTH_SHORT);
+                    dateAsText.setText(TodoUtility.formatDate(calendar.getTimeInMillis()));
+                }
+            });
 
             setTitle("Detail View");
 
@@ -75,7 +101,7 @@ public class ItemDetailsActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     Log.e(LOG_TAG, "setOnClickListener the checkbox status is  " + itemIsFavourite.isChecked() );
-                    processItemSave(accessor, itemTitle, itemDescription, itemIsFavourite, itemIsDone);
+                    processItemSave(accessor, itemTitle, itemDescription, itemIsFavourite, itemIsDone, itemDate);
                 }
             });
 
@@ -105,7 +131,7 @@ public class ItemDetailsActivity extends Activity {
      * @param isFavourite
      */
     protected void processItemSave(DataItemAccessor accessor, EditText title,
-                                   EditText description, CheckBox isFavourite, CheckBox isDone) {
+                                   EditText description, CheckBox isFavourite, CheckBox isDone, DatePicker itemDate) {
         TodoItem item = accessor.readItem();
         // re-set the fields of the item
         Log.i(LOG_TAG, "processItemSave(): ITEM_ID" + accessor.readItem().getId());
@@ -113,6 +139,9 @@ public class ItemDetailsActivity extends Activity {
         item.setDescription(description.getText().toString());
         item.setIsFavourite(isFavourite.isChecked());
         item.setIsDone(isDone.isChecked());
+
+        GregorianCalendar calendar = new GregorianCalendar(itemDate.getYear(), itemDate.getMonth(), itemDate.getDayOfMonth());
+        item.setDate(calendar.getTimeInMillis());
         // save the item
         accessor.writeItem();
 

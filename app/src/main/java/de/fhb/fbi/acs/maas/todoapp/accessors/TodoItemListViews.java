@@ -20,24 +20,29 @@ import com.deves.maus.R;
 import java.util.List;
 
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
+import de.fhb.fbi.acs.maas.todoapp.utility.TodoUtility;
 
 
 public class TodoItemListViews {
     private static int count;
-    private static final int MAX_TITLE_LEGHT = 10;
+    private static final int MAX_TITLE_LENGTH = 12;
+    private static final String LOG_TAG = TodoItemListViews.class.getSimpleName();
 
     public static  ArrayAdapter<TodoItem> createTodoItemArrayAdapter(final Activity aContext, final List<TodoItem> aItems) {
         return new ArrayAdapter<TodoItem>(aContext, R.layout.todo_item_in_listview, aItems) {
 
             @Override
             public View getView(final int position, View listItemView, ViewGroup parent) {
+
                 View layout = listItemView == null ? aContext.getLayoutInflater().inflate(R.layout.todo_item_in_listview, parent, false) : listItemView;
                 final TextView itemTitle = (TextView) layout.findViewById(R.id.todo_item_title);
-                TodoItem item = getItem(position);
+                final TodoItem item = getItem(position);
                 String title = getItem(position).getTitle();
                 title = checkTitle(title);
                 itemTitle.setText(title);
                 final ImageView imageView = (ImageView) layout.findViewById(R.id.todo_item_icon);
+                final TextView itemDate = (TextView) layout.findViewById(R.id.todo_item_date);
+                itemDate.setText(TodoUtility.getStringDateFromLong(item.getDate()));
 
                 if (!item.isFavourite()) {
                     imageView.setImageResource(R.drawable.star_grey);
@@ -50,8 +55,13 @@ public class TodoItemListViews {
                     public void onClick(View v) {
                         if (count % 2 == 0){
                             imageView.setImageResource(R.drawable.star_yellow);
-                        } else
+                            item.setIsFavourite(true);
+                            Log.e(LOG_TAG, "onClick: image " + item);
+                        } else {
                             imageView.setImageResource(R.drawable.star_grey);
+                            Log.e(LOG_TAG, "onClick: image " + item);
+                            item.setIsFavourite(false);
+                        }
                         count++;
                     }
                 });
@@ -84,8 +94,8 @@ public class TodoItemListViews {
     }
 
     private static String checkTitle(String title){
-        if (title.length() > MAX_TITLE_LEGHT){
-            return title.substring(0, MAX_TITLE_LEGHT) + "...";
+        if (title.length() > MAX_TITLE_LENGTH){
+            return title.substring(0, MAX_TITLE_LENGTH) + "..";
         } else
             return title;
     }

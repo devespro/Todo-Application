@@ -26,7 +26,7 @@
         android:id="@+id/todo_linear_layout"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
-        android:layout_weight="7"
+        android:layout_weight="11"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/todo_item_title"
@@ -35,17 +35,35 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
             android:layout_weight="5"
-            android:textSize="20sp"/>
-
+            android:textSize="16sp"/>
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="5"
+            android:orientation="vertical">
         <TextView
             android:id="@+id/todo_item_date"
-            android:text="12/12/2016"
-            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:paddingRight="10dp"
+            android:textAlignment="gravity"
+            android:layout_gravity="right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
-            android:layout_weight="2"
             android:textAppearance="?android:textAppearanceSmall"/>
+        <TextView
+            android:id="@+id/todo_item_time"
+            android:gravity="right"
+            android:paddingRight="10dp"
+            android:layout_gravity="right"
+            android:text="12:00"
+            android:textAlignment="gravity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed"
+            android:textAppearance="?android:textAppearanceSmall"/>
+            </LinearLayout>
 
         <CheckBox
             android:focusable="false"
