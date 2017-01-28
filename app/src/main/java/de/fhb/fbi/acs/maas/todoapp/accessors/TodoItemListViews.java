@@ -14,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.deves.maus.R;
 
@@ -25,25 +24,18 @@ import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 
 public class TodoItemListViews {
     private static int count;
+    private static final int MAX_TITLE_LEGHT = 10;
 
     public static  ArrayAdapter<TodoItem> createTodoItemArrayAdapter(final Activity aContext, final List<TodoItem> aItems) {
-        return new ArrayAdapter<TodoItem>(aContext, R.layout.todo_item, aItems) {
+        return new ArrayAdapter<TodoItem>(aContext, R.layout.todo_item_in_listview, aItems) {
 
             @Override
             public View getView(final int position, View listItemView, ViewGroup parent) {
-                View layout = listItemView == null ? aContext.getLayoutInflater().inflate(R.layout.todo_item, parent, false) : listItemView;
-
-                final TextView itemView = (TextView) layout.findViewById(R.id.todo_item_title);
-                itemView.setText(getItem(position).getTitle());
-
-                itemView.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View aClickedView) {
-                        Toast.makeText(getContext(), itemView.getText(), Toast.LENGTH_LONG).show();
-
-                    }
-                });
+                View layout = listItemView == null ? aContext.getLayoutInflater().inflate(R.layout.todo_item_in_listview, parent, false) : listItemView;
+                final TextView itemTitle = (TextView) layout.findViewById(R.id.todo_item_title);
+                String title = getItem(position).getTitle();
+                title = checkTitle(title);
+                itemTitle.setText(title);
                 final ImageView imageView = (ImageView) layout.findViewById(R.id.todo_item_icon);
                 imageView.setImageResource(R.drawable.star_grey);
 
@@ -63,17 +55,17 @@ public class TodoItemListViews {
                 if (item.isDone()){
                     checkBox.setChecked(true);
                     Log.e("MY_TAG", "onClick: checkbox is clicked" );
-                    itemView.setPaintFlags(itemView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    itemTitle.setPaintFlags(itemTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }
                 checkBox.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (checkBox.isChecked()){
                             Log.e("MY_TAG", "onClick: checkbox is clicked" );
-                            itemView.setPaintFlags(itemView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            itemTitle.setPaintFlags(itemTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         } else {
                             Log.e("MY_TAG", "onClick: checkbox is NOT clicked");
-                            itemView.setPaintFlags(itemView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                            itemTitle.setPaintFlags(itemTitle.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
                         }
                     }
                 });
@@ -81,6 +73,13 @@ public class TodoItemListViews {
             }
 
         };
+    }
+
+    private static String checkTitle(String title){
+        if (title.length() > MAX_TITLE_LEGHT){
+            return title.substring(0, MAX_TITLE_LEGHT) + "...";
+        } else
+            return title;
     }
 
     //TODO add ViewHolder pattern
