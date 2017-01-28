@@ -6,4 +6,10 @@
     <string name="error_massage_incorrect_email">Incorrect Email</string>
     <string name="error_message_invalid_login">Invalid login</string>
     <string name="login_hint_password">should be exactly 6 digits</string>
+
+    <!-- Detail view-->
+    <string name="title_hint">Enter your title here</string>
+    <string name="description_hint">Enter your description here</string>
+    <string name="checkbox_is_favourite_title">Mark as favourite</string>
+    <string name="checkbox_is_done_title">Mark as done</string>
 </resources>

@@ -1,9 +1,11 @@
 package de.fhb.fbi.acs.maas.todoapp.model;
 
+import java.io.Serializable;
+
 /**
  * @author Esien Novruzov
  */
-public abstract class GenericEntity {
+public abstract class GenericEntity implements Serializable {
     protected static long ID;
     protected long id;
 

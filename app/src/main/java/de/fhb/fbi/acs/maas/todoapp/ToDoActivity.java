@@ -95,7 +95,7 @@ public class TodoActivity extends Activity {
                         + ", id is: " + itemId);
 
                 TodoItem item = accessor.getSelectedItem(itemPosition,itemId);
-
+                Log.i(LOG_TAG, "INSIDE_ON_ITEM_CLICK: id = " + item.getId());
                 processItemSelection(item);
             }
 
@@ -132,6 +132,7 @@ public class TodoActivity extends Activity {
                 IntentTodoItemAccessor.class.getName());
         // start the details activity with the intent
         startActivityForResult(intent, REQUEST_ITEM_DETAILS);
+
     }
 
     @Override
@@ -139,22 +140,32 @@ public class TodoActivity extends Activity {
 
         Log.i(LOG_TAG, "onActivityResult(): " + data);
 
-        TodoItem item = data != null ? (TodoItem) data
-                .getSerializableExtra(ARG_ITEM_OBJECT) : null;
-
+        TodoItem item = data != null ? (TodoItem) data.getSerializableExtra(ARG_ITEM_OBJECT) : null;
+        Log.e(LOG_TAG, "onActivityResult(): ITEM ###### -> " + item);
         // check which request we had
         if (requestCode == REQUEST_ITEM_DETAILS) {
             if (resultCode == RESPONSE_ITEM_EDITED) {
-                Log.i(LOG_TAG, "onActivityResult(): updating the edited item");
+                Log.i(LOG_TAG, "onActivityResult(): updating the edited item with CHECKBOX " + item.isFavourite());
                 this.accessor.updateItem(item);
             } else if (resultCode == RESPONSE_ITEM_DELETED) {
+                Log.e(LOG_TAG, "onActivityResult(): ITEM TO DELETE -> " + item.getId());
                 this.accessor.deleteItem(item);
             }
-            // this.listview.invalidate();
         } else if (requestCode == REQUEST_ITEM_CREATION
                 && resultCode == RESPONSE_ITEM_EDITED) {
             Log.i(LOG_TAG, "onActivityResult(): adding the created item");
             this.accessor.addItem(item);
         }
+    }
+    /**
+     * if we stop, we signal this to the accessor (which is necessary in order to avoid trouble when operating on dbs)
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(LOG_TAG, "onDestroy(): will signal finalisation to the accessors");
+        this.accessor.close();
+
+        super.onStop();
     }
 }

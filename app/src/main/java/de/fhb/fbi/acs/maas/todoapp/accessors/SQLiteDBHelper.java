@@ -18,7 +18,7 @@ import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 public class SQLiteDBHelper{
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private final Activity mActivity;
 
@@ -34,8 +34,7 @@ public class SQLiteDBHelper{
             TodoContract.TodoEntry.COLUMN_ISDONE + " BOOLEAN NOT NULL," +
             TodoContract.TodoEntry.COLUMN_ISFAVOURITE + " BOOLEAN NOT NULL," +
             TodoContract.TodoEntry.COLUMN_DATE + " INTEGER , " +
-            TodoContract.TodoEntry.COLUMN_TIME +  " INTEGER, " +
-            TodoContract.TodoEntry.COLUMN_ICON_URL + " TEXT " +
+            TodoContract.TodoEntry.COLUMN_TIME +  " INTEGER " +
             " );";
 
     /**
@@ -51,7 +50,6 @@ public class SQLiteDBHelper{
             TodoContract.TodoEntry.COLUMN_ISFAVOURITE,
             TodoContract.TodoEntry.COLUMN_DATE,
             TodoContract.TodoEntry.COLUMN_TIME,
-            TodoContract.TodoEntry.COLUMN_ICON_URL
     };
 
     private static final String ORDERING = TodoContract.TodoEntry._ID + " ASC";
@@ -101,7 +99,6 @@ public class SQLiteDBHelper{
         insertItem.put(TodoContract.TodoEntry.COLUMN_ISFAVOURITE, item.isFavourite());
         insertItem.put(TodoContract.TodoEntry.COLUMN_DATE, item.getDate());
         insertItem.put(TodoContract.TodoEntry.COLUMN_TIME, item.getTime());
-        insertItem.put(TodoContract.TodoEntry.COLUMN_ICON_URL, item.getIconUrl());
 
         return insertItem;
     }
@@ -123,7 +120,6 @@ public class SQLiteDBHelper{
         todoItem.setIsFavourite(cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_ISFAVOURITE)) > 0);
         todoItem.setDate(cursor.getLong(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_DATE)));
         todoItem.setTime(cursor.getLong(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_TIME)));
-        todoItem.setIconUrl(cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_ICON_URL)));
         return todoItem;
     }
 
@@ -145,8 +141,10 @@ public class SQLiteDBHelper{
 
     public void update(TodoItem item){
         Log.i(LOG_TAG, "update(): " + item);
+        Log.i(LOG_TAG, "update id: " + item.getId());
         this.db.update(TodoContract.TodoEntry.TABLE_NAME, createDBTodoItem(item), WHERE_IDENTIFY_ITEM, new String[]{String.valueOf(item.getId())});
         Log.i(LOG_TAG, "update(): " + item + " finished.");
+        Log.i(LOG_TAG, "updated id: " + item.getId());
     }
 
     public void close(){

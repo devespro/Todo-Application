@@ -43,7 +43,6 @@ public class TodoContract {
         public static final String COLUMN_ISFAVOURITE = "isFavourite";
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_TIME = "time";
-        public static final String COLUMN_ICON_URL = "iconUrl";
 
         public static Uri buildTodoItemUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

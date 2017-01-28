@@ -33,11 +33,17 @@ public class TodoItemListViews {
             public View getView(final int position, View listItemView, ViewGroup parent) {
                 View layout = listItemView == null ? aContext.getLayoutInflater().inflate(R.layout.todo_item_in_listview, parent, false) : listItemView;
                 final TextView itemTitle = (TextView) layout.findViewById(R.id.todo_item_title);
+                TodoItem item = getItem(position);
                 String title = getItem(position).getTitle();
                 title = checkTitle(title);
                 itemTitle.setText(title);
                 final ImageView imageView = (ImageView) layout.findViewById(R.id.todo_item_icon);
-                imageView.setImageResource(R.drawable.star_grey);
+
+                if (!item.isFavourite()) {
+                    imageView.setImageResource(R.drawable.star_grey);
+                } else {
+                    imageView.setImageResource(R.drawable.star_yellow);
+                }
 
                 imageView.setOnClickListener(new OnClickListener() {
                     @Override
@@ -51,11 +57,13 @@ public class TodoItemListViews {
                 });
 
                 final CheckBox checkBox = (CheckBox)layout.findViewById(R.id.todo_item_checkbox);
-                TodoItem item = getItem(position);
                 if (item.isDone()){
                     checkBox.setChecked(true);
                     Log.e("MY_TAG", "onClick: checkbox is clicked" );
                     itemTitle.setPaintFlags(itemTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    itemTitle.setPaintFlags(itemTitle.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                    checkBox.setChecked(false);
                 }
                 checkBox.setOnClickListener(new OnClickListener() {
                     @Override

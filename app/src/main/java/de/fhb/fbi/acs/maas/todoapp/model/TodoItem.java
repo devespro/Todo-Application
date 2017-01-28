@@ -14,21 +14,8 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
     private boolean isFavourite;
     private long date;
     private long time;
-    private String iconUrl;
 
     private static final long serialVersionUID = -7481912314472891511L;
-
-
-    public TodoItem(long id, String title, String description, boolean isDone, boolean isFavourite, long date, long time, String iconUrl) {
-        this.setId(id == -1 ? ID++ : id);
-        this.title = title;
-        this.description = description;
-        this.isDone = isDone;
-        this.isFavourite = isFavourite;
-        this.date = date;
-        this.time = time;
-        this.iconUrl = iconUrl;
-    }
 
     public TodoItem(long id, String title, String description, boolean isDone, boolean isFavourite, long date, long time) {
         this.setId(id == -1 ? ID++ : id);
@@ -83,15 +70,6 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
         this.isFavourite = isFavourite;
     }
 
-
-    public String getIconUrl() {
-        return iconUrl;
-    }
-
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
-    }
-
     public long getDate() {
         return date;
     }
@@ -115,6 +93,8 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
     public void updateFrom(TodoItem item) {
         this.setTitle(item.getTitle());
         this.setDescription(item.getDescription());
+        this.setIsFavourite(item.isFavourite);
+        this.setIsDone(item.isDone);
         this.setDate(item.getDate());
         this.setTime(item.getTime());
     }

@@ -39,7 +39,7 @@ public class IntentTodoItemAccessor extends AbstractActivityDataAccessor
     }
 
     public void createItem() {
-        this.item = new TodoItem(-1,"", "", false,false, 0,0,null);
+        this.item = new TodoItem(-1,"", "", false,false, 0,0);
     }
 
     @Override

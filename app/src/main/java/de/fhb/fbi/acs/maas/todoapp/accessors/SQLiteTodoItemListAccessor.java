@@ -66,16 +66,13 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
 
     @Override
     public void updateItem(TodoItem item) {
+        Log.e(LOG_TAG, "THE UPDATE ITEM " + item.getId());
         mHelper.update(item);
-        this.adapter.notifyDataSetChanged();
         // then update the item and notify the adapter
-        if (lookupItem(item) != null) {
-            Log.e(LOG_TAG, "updateItem " + item);
-            lookupItem(item).updateFrom(item);
-            this.adapter.notifyDataSetChanged();
-        } else {
-            Log.e(LOG_TAG, "updateItem NOT FOUND" + item);
-        }
+        Log.e(LOG_TAG, "updateItem CHECKBOX " + item.isFavourite());
+        lookupItem(item).updateFrom(item);
+        this.adapter.notifyDataSetChanged();
+
     }
 
     @Override

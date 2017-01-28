@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.deves.maus.R;
@@ -13,6 +14,7 @@ import com.deves.maus.R;
 import de.fhb.fbi.acs.maas.todoapp.accessors.AbstractActivityDataAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.DataItemAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.IntentTodoItemAccessor;
+import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 
 /**
  * Created by Esien Novruzov on 28/01/17.
@@ -39,6 +41,8 @@ public class ItemDetailsActivity extends Activity {
             // obtain the ui elements
             final EditText itemTitle = (EditText) findViewById(R.id.item_title);
             final EditText itemDescription = (EditText) findViewById(R.id.item_description);
+            final CheckBox itemIsFavourite = (CheckBox) findViewById(R.id.item_is_favourite_checkbox);
+            final CheckBox itemIsDone = (CheckBox) findViewById(R.id.item_is_done_checkbox);
             Button saveButton = (Button) findViewById(R.id.saveButton);
             Button deleteButton = (Button) findViewById(R.id.deleteButton);
 
@@ -54,18 +58,24 @@ public class ItemDetailsActivity extends Activity {
             // if we do not have an item, we assume we need to create a new one
             if (accessor.hasItem()) {
                 // set name and description
-                itemTitle.setText(accessor.readItem().getTitle());
-                itemDescription.setText(accessor.readItem().getDescription());
+                TodoItem item = accessor.readItem();
+                Log.e(LOG_TAG, "onCreate:DETAIL_ACTIVITY CHECKBOX _>  " + item.isFavourite());
+                itemTitle.setText(item.getTitle());
+                itemDescription.setText(item.getDescription());
+                itemIsFavourite.setChecked(item.isFavourite());
+                itemIsDone.setChecked(item.isDone());
             } else {
                 accessor.createItem();
             }
+
 
             // we only set a listener on the ok button that will collect the
             // edited fields and set the values on the item
             saveButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    processItemSave(accessor, itemTitle, itemDescription);
+                    Log.e(LOG_TAG, "setOnClickListener the checkbox status is  " + itemIsFavourite.isChecked() );
+                    processItemSave(accessor, itemTitle, itemDescription, itemIsFavourite, itemIsDone);
                 }
             });
 
@@ -92,13 +102,17 @@ public class ItemDetailsActivity extends Activity {
      * @param accessor
      * @param title
      * @param description
+     * @param isFavourite
      */
     protected void processItemSave(DataItemAccessor accessor, EditText title,
-                                   EditText description) {
+                                   EditText description, CheckBox isFavourite, CheckBox isDone) {
+        TodoItem item = accessor.readItem();
         // re-set the fields of the item
-        accessor.readItem().setTitle(title.getText().toString());
-        accessor.readItem().setDescription(description.getText().toString());
-
+        Log.i(LOG_TAG, "processItemSave(): ITEM_ID" + accessor.readItem().getId());
+        item.setTitle(title.getText().toString());
+        item.setDescription(description.getText().toString());
+        item.setIsFavourite(isFavourite.isChecked());
+        item.setIsDone(isDone.isChecked());
         // save the item
         accessor.writeItem();
 

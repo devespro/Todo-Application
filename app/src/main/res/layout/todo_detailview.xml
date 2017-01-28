@@ -12,7 +12,7 @@
             android:id="@+id/item_title"
             android:layout_width="fill_parent"
             android:layout_height="50dip"
-            android:hint="SOME DESCRIPTION HINT"
+            android:hint="@string/title_hint"
             android:imeOptions="actionDone"
             android:singleLine="true" />
 
@@ -21,19 +21,40 @@
             android:layout_width="fill_parent"
             android:layout_height="150dip"
             android:gravity="start|top"
-            android:hint="SOME HINT"
+            android:hint="@string/description_hint"
             android:imeOptions="actionDone"
             android:padding="5dp"
             android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/item_is_favourite_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/checkbox_is_favourite_title"/>
+
+        <CheckBox
+            android:id="@+id/item_is_done_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/checkbox_is_done_title"/>
+
 
         <!-- use a selector operating on the content! -->
 
     </LinearLayout>
 
     <!-- a button whose activation depends on the filling of other elements -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:layout_alignParentBottom="true"
+        >
     <Button
         android:id="@+id/saveButton"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="7"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:height="30dip"
@@ -41,10 +62,11 @@
 
     <Button
         android:id="@+id/deleteButton"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="3"
         android:layout_height="wrap_content"
         android:layout_above="@id/saveButton"
         android:height="30dip"
         android:text="Delete" />
-
+    </LinearLayout>
 </RelativeLayout>
