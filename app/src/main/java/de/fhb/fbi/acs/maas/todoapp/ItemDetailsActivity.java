@@ -11,11 +11,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.deves.maus.R;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import de.fhb.fbi.acs.maas.todoapp.accessors.AbstractActivityDataAccessor;
@@ -78,7 +78,6 @@ public class ItemDetailsActivity extends Activity {
         viewHolder.itemTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                Toast.makeText(ItemDetailsActivity.this, String.format("%02d:%02d", hourOfDay, minute), Toast.LENGTH_SHORT).show();
                 viewHolder.timeAsText.setText(String.format("%02d:%02d", hourOfDay, minute));
             }
         });
@@ -92,17 +91,14 @@ public class ItemDetailsActivity extends Activity {
             viewHolder.itemIsFavourite.setChecked(item.isFavourite());
             viewHolder.itemIsDone.setChecked(item.isDone());
             viewHolder.timeAsText.setText(TodoUtility.formatTime(item.getTime()));
-            /*
+
             if (item.getTime() > 0) {
-                viewHolder.itemTime.setHour(new Date(item.getTime()).getHours());
-                viewHolder.itemTime.setMinute(new Date(item.getTime()).getMinutes());
+                viewHolder.itemTime.setCurrentHour(new Date(item.getTime()).getHours());
+                viewHolder.itemTime.setCurrentMinute(new Date(item.getTime()).getMinutes());
             }
-            */
         } else {
             accessor.createItem();
         }
-
-
 
         viewHolder.saveButton.setOnClickListener(new OnClickListener() {
             @Override
