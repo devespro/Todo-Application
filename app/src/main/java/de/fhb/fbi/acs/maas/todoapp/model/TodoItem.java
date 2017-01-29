@@ -1,6 +1,9 @@
 package de.fhb.fbi.acs.maas.todoapp.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The TodoItem class represents the data model for each item in TodoApplication
@@ -101,8 +104,12 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
 
     @Override
     public int compareTo(TodoItem another) {
-        //TODO
+        if (this.isDone() && another.isDone())
         return 0;
+        else if (this.isDone() && !another.isDone()){
+            return 1;
+        } else
+            return -1;
     }
 
     //TODO only for debugging reasons! Delete before submitting
@@ -117,5 +124,33 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
                 ", date=" + date +
                 ", time=" + time +
                 '}';
+    }
+
+    public static void main(String[] args) {
+        List<TodoItem> items = new ArrayList<>();
+        TodoItem item1 = new TodoItem(-1, "first title","1 description",false,false,0l,0l);
+        TodoItem item2 = new TodoItem(-1, "second title","2 description",true,false,0l,0l);
+        TodoItem item3 = new TodoItem(-1, "third title","3 description",false,false,0l,0l);
+        TodoItem item4 = new TodoItem(-1, "forth title","4 description",true,false,0l,0l);
+        TodoItem item5 = new TodoItem(-1, "fifth title","5 description",false,false,0l,0l);
+        TodoItem item6 = new TodoItem(-1, "sixth title","6 description",true,false,0l,0l);
+        TodoItem item7 = new TodoItem(-1, "seventh title","7 description",true,false,0l,0l);
+        items.add(item1);
+        items.add(item2);
+        items.add(item3);
+        items.add(item4);
+        items.add(item5);
+        items.add(item6);
+        items.add(item7);
+
+        for (TodoItem item : items){
+            System.out.println(item);
+        }
+
+        System.out.println("After sorting");
+        Collections.sort(items);
+        for (TodoItem item : items){
+            System.out.println(item);
+        }
     }
 }

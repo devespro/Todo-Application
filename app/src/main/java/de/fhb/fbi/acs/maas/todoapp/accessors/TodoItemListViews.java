@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.deves.maus.R;
 
+import java.util.Collections;
 import java.util.List;
 
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
@@ -35,7 +36,6 @@ public class TodoItemListViews {
 
             @Override
             public View getView(final int position, View listItemView, ViewGroup parent) {
-
                final  SQLiteDBHelper mHelper = new SQLiteDBHelper(aContext);
 
                 final View layout = listItemView == null ? aContext.getLayoutInflater().inflate(R.layout.todo_item_in_listview, parent, false) : listItemView;
@@ -60,17 +60,19 @@ public class TodoItemListViews {
 
                         if (!item.isFavourite()){
                             imageView.setImageResource(R.drawable.star_yellow);
-
+                            Collections.sort(aItems);
                             item.setIsFavourite(true);
                             mHelper.update(item);
                             notifyDataSetChanged();
                             Log.e(LOG_TAG, "onClick: image " + item);
 
                         } else {
+                            Collections.sort(aItems);
                             imageView.setImageResource(R.drawable.star_grey);
                             Log.e(LOG_TAG, "onClick: image " + item);
                             item.setIsFavourite(false);
                             mHelper.update(item);
+                            Collections.sort(aItems);
                             notifyDataSetChanged();
 
                         }
@@ -102,11 +104,13 @@ public class TodoItemListViews {
                         if (checkBox.isChecked()){
                             item.setIsDone(true);
                             mHelper.update(item);
+                            Collections.sort(aItems);
                             notifyDataSetChanged();
                             Log.e("MY_TAG", "checkbox click onClickListener -> status checked");
                         } else {
                             item.setIsDone(false);
                             mHelper.update(item);
+                            Collections.sort(aItems);
                             notifyDataSetChanged();
                             Log.e("MY_TAG", "checkbox click onClickListener -> status unchecked");
                         }

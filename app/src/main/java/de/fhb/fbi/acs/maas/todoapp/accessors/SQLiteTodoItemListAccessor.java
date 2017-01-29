@@ -6,6 +6,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
@@ -42,7 +43,7 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
         mHelper.prepareSQLiteDatabase();
 
         readOutItemsFromDatabase();
-
+        Collections.sort(items);
         this.adapter = TodoItemListViews.createTodoItemArrayAdapter(getActivity(),items);
         this.adapter.setNotifyOnChange(true);
 
