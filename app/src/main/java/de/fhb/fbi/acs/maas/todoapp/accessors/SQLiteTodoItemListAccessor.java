@@ -43,6 +43,7 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
         mHelper.prepareSQLiteDatabase();
 
         readOutItemsFromDatabase();
+
         Collections.sort(items);
         this.adapter = TodoItemListViews.createTodoItemArrayAdapter(getActivity(),items);
         this.adapter.setNotifyOnChange(true);
@@ -67,9 +68,6 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
 
     @Override
     public void updateItem(TodoItem item) {
-
-        Log.e(LOG_TAG, "THE UPDATE ITEM " + item.getId());
-        Log.e(LOG_TAG, "THE UPDATE ITEM, mHelper is --->>> " + mHelper);
         mHelper.update(item);
         // then update the item and notify the adapter
         Log.e(LOG_TAG, "updateItem CHECKBOX " + item.isFavourite());

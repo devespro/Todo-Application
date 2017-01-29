@@ -27,8 +27,6 @@ import de.fhb.fbi.acs.maas.todoapp.utility.TodoUtility;
 
 
 public class TodoItemListViews {
-    private static int count = 0;
-    private static int checkBoxCount = 0;
     private static final int MAX_TITLE_LENGTH = 12;
     private static final long MILLISECONDS_IN_ONE_DAY = 86400000L;
     private static final String LOG_TAG = TodoItemListViews.class.getSimpleName();
@@ -48,8 +46,9 @@ public class TodoItemListViews {
                 itemTitle.setText(title);
                 final ImageView imageView = (ImageView) layout.findViewById(R.id.todo_item_icon);
                 final TextView itemDate = (TextView) layout.findViewById(R.id.todo_item_date);
-                final TextView itemTime = (TextView) layout.findViewById(R.id.todo_item_time);
+                final TextView itemTimeTextView = (TextView) layout.findViewById(R.id.todo_item_time);
                 itemDate.setText(TodoUtility.getStringDateFromLong(item.getDate()));
+                itemTimeTextView.setText(TodoUtility.formatTime(item.getTime()));
 
                 if (!item.isFavourite()) {
                     imageView.setImageResource(R.drawable.star_grey);
@@ -84,27 +83,25 @@ public class TodoItemListViews {
                     checkBox.setChecked(true);
                     itemTitle.setTextColor(Color.GRAY);
                     itemDate.setTextColor(Color.GRAY);
-                    itemTime.setTextColor(Color.GRAY);
+                    itemTimeTextView.setTextColor(Color.GRAY);
                     Log.e("MY_TAG", "checkbox initializing -> status checked");
                     itemTitle.setPaintFlags(itemTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 } else {
                     itemTitle.setTextColor(Color.WHITE);
                     itemDate.setTextColor(Color.WHITE);
-                    itemTime.setTextColor(Color.WHITE);
+                    itemTimeTextView.setTextColor(Color.WHITE);
                     itemTitle.setPaintFlags(itemTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     checkBox.setChecked(false);
                     Log.e("MY_TAG", "checkbox initializing -> status unchecked");
-
                 }
 
                 if (item.getDate() + MILLISECONDS_IN_ONE_DAY < new Date().getTime()){
                     itemDate.setTextColor(Color.RED);
                 }
-
                 checkBox.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (checkBox.isChecked()){
+                        if (checkBox.isChecked()) {
                             item.setIsDone(true);
                             mHelper.update(item);
                             Collections.sort(aItems);

@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">ToDoApplication</string>
 
+    <!-- Activity name -->
+    <string name="detail_view_title">Detail View</string>
+
     <!-- Error messages-->
     <string name="error_massage_empty_email">Email must be not empty</string>
     <string name="error_massage_incorrect_email">Incorrect Email</string>
@@ -14,6 +17,6 @@
     <string name="checkbox_is_done_title">Mark as done</string>
 
     <!-- Sorting -->
-    <string name="sort_date_fav">Sort date-fav</string>
-    <string name="sort_fav_date">Sort fav-date</string>
+    <string name="sort_date_fav">Sort date-favourite</string>
+    <string name="sort_fav_date">Sort favourite-date</string>
 </resources>

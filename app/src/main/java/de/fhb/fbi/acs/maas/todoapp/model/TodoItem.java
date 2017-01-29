@@ -1,5 +1,7 @@
 package de.fhb.fbi.acs.maas.todoapp.model;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,6 +103,7 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
         this.setIsDone(item.isDone);
         this.setDate(item.getDate());
         this.setTime(item.getTime());
+        Log.e("mytag", "updateFrom: #######" + item );
     }
 
     @Override

@@ -13,6 +13,13 @@ public class TodoUtility {
         return DateFormat.getDateInstance().format(date);
     }
 
+    public static String formatTime(long timeInMilliseconds) {
+        Date date = timeInMilliseconds == 0 ? null : new Date(timeInMilliseconds);
+        if (date == null)
+            return "--:--";
+        return String.format("%02d:%02d", date.getHours(), date.getMinutes());
+    }
+
     public static String getStringDateFromLong(long dateInMilliseconds){
         Date date = new Date(dateInMilliseconds);
         Calendar cal = Calendar.getInstance();

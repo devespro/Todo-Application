@@ -98,9 +98,7 @@ public class TodoActivity extends Activity {
 
                 Log.i(LOG_TAG, "onItemClick: position is: " + itemPosition
                         + ", id is: " + itemId);
-
                 TodoItem item = accessor.getSelectedItem(itemPosition, itemId);
-                Log.i(LOG_TAG, "INSIDE_ON_ITEM_CLICK: id = " + item.getId());
                 processItemSelection(item);
             }
 
@@ -172,10 +170,6 @@ public class TodoActivity extends Activity {
 
     private void sortItemsByDateAndFavourite(List<TodoItem> items){
         Collections.sort(items, TodoItem.sortByDateAndFavouriteComparator());
-        Log.e(LOG_TAG, "AFTER SORTING");
-        for (TodoItem item : items){
-            Log.e(LOG_TAG, "Get an item from list for sorting -> " + item.isDone() + "/" + item.isFavourite() + "/" + item.getDate());
-        }
     }
 
     private void sortItemsByFavouriteAndDate(List<TodoItem> items){
@@ -187,7 +181,6 @@ public class TodoActivity extends Activity {
         Log.i(LOG_TAG, "onActivityResult(): " + data);
 
         TodoItem item = data != null ? (TodoItem) data.getSerializableExtra(ARG_ITEM_OBJECT) : null;
-        Log.e(LOG_TAG, "onActivityResult(): ITEM ###### -> " + item);
         // check which request we had
         if (requestCode == REQUEST_ITEM_DETAILS) {
             if (resultCode == RESPONSE_ITEM_EDITED) {
