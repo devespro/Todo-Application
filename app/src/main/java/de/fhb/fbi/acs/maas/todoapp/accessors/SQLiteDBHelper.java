@@ -140,6 +140,8 @@ public class SQLiteDBHelper{
     }
 
     public void update(TodoItem item){
+        this.db = getActivity().openOrCreateDatabase(DATABASE_NAME,
+                SQLiteDatabase.CREATE_IF_NECESSARY, null);
         Log.i(LOG_TAG, "update(): " + item);
         Log.i(LOG_TAG, "update id: " + item.getId());
         this.db.update(TodoContract.TodoEntry.TABLE_NAME, createDBTodoItem(item), WHERE_IDENTIFY_ITEM, new String[]{String.valueOf(item.getId())});

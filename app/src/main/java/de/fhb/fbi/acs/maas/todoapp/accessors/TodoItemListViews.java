@@ -5,6 +5,7 @@ package de.fhb.fbi.acs.maas.todoapp.accessors;
  */
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +25,8 @@ import de.fhb.fbi.acs.maas.todoapp.utility.TodoUtility;
 
 
 public class TodoItemListViews {
-    private static int count;
+    private static int count = 0;
+    private static int checkBoxCount = 0;
     private static final int MAX_TITLE_LENGTH = 12;
     private static final String LOG_TAG = TodoItemListViews.class.getSimpleName();
 
@@ -34,7 +36,9 @@ public class TodoItemListViews {
             @Override
             public View getView(final int position, View listItemView, ViewGroup parent) {
 
-                View layout = listItemView == null ? aContext.getLayoutInflater().inflate(R.layout.todo_item_in_listview, parent, false) : listItemView;
+               final  SQLiteDBHelper mHelper = new SQLiteDBHelper(aContext);
+
+                final View layout = listItemView == null ? aContext.getLayoutInflater().inflate(R.layout.todo_item_in_listview, parent, false) : listItemView;
                 final TextView itemTitle = (TextView) layout.findViewById(R.id.todo_item_title);
                 final TodoItem item = getItem(position);
                 String title = getItem(position).getTitle();
@@ -42,6 +46,7 @@ public class TodoItemListViews {
                 itemTitle.setText(title);
                 final ImageView imageView = (ImageView) layout.findViewById(R.id.todo_item_icon);
                 final TextView itemDate = (TextView) layout.findViewById(R.id.todo_item_date);
+                final TextView itemTime = (TextView) layout.findViewById(R.id.todo_item_time);
                 itemDate.setText(TodoUtility.getStringDateFromLong(item.getDate()));
 
                 if (!item.isFavourite()) {
@@ -49,42 +54,63 @@ public class TodoItemListViews {
                 } else {
                     imageView.setImageResource(R.drawable.star_yellow);
                 }
-
                 imageView.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (count % 2 == 0){
+
+                        if (!item.isFavourite()){
                             imageView.setImageResource(R.drawable.star_yellow);
+
                             item.setIsFavourite(true);
+                            mHelper.update(item);
+                            notifyDataSetChanged();
                             Log.e(LOG_TAG, "onClick: image " + item);
+
                         } else {
                             imageView.setImageResource(R.drawable.star_grey);
                             Log.e(LOG_TAG, "onClick: image " + item);
                             item.setIsFavourite(false);
+                            mHelper.update(item);
+                            notifyDataSetChanged();
+
                         }
-                        count++;
+                        //count++;
                     }
                 });
 
                 final CheckBox checkBox = (CheckBox)layout.findViewById(R.id.todo_item_checkbox);
                 if (item.isDone()){
                     checkBox.setChecked(true);
-                    Log.e("MY_TAG", "onClick: checkbox is clicked" );
+                    itemTitle.setTextColor(Color.GRAY);
+                    itemDate.setTextColor(Color.GRAY);
+                    itemTime.setTextColor(Color.GRAY);
+                    Log.e("MY_TAG", "checkbox initializing -> status checked");
                     itemTitle.setPaintFlags(itemTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 } else {
-                    itemTitle.setPaintFlags(itemTitle.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                    itemTitle.setTextColor(Color.WHITE);
+                    itemDate.setTextColor(Color.WHITE);
+                    itemTime.setTextColor(Color.WHITE);
+                    itemTitle.setPaintFlags(itemTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     checkBox.setChecked(false);
+                    Log.e("MY_TAG", "checkbox initializing -> status unchecked");
+
                 }
+
                 checkBox.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (checkBox.isChecked()){
-                            Log.e("MY_TAG", "onClick: checkbox is clicked" );
-                            itemTitle.setPaintFlags(itemTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                            item.setIsDone(true);
+                            mHelper.update(item);
+                            notifyDataSetChanged();
+                            Log.e("MY_TAG", "checkbox click onClickListener -> status checked");
                         } else {
-                            Log.e("MY_TAG", "onClick: checkbox is NOT clicked");
-                            itemTitle.setPaintFlags(itemTitle.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                            item.setIsDone(false);
+                            mHelper.update(item);
+                            notifyDataSetChanged();
+                            Log.e("MY_TAG", "checkbox click onClickListener -> status unchecked");
                         }
+                        //checkBoxCount++;
                     }
                 });
                 return layout;
