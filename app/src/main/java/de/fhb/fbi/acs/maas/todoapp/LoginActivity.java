@@ -154,10 +154,8 @@ public class LoginActivity extends Activity {
         final Pattern pattern = Pattern.compile(EMAIL_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
         if (matcher.matches()){
-            Log.e(LoginActivity.class.getSimpleName(), "onEditorAction: invalid email: " + email);
             return true;
         } else {
-            Log.i(LoginActivity.class.getSimpleName(), "onEditorAction: the email is matched");
             return false;
         }
     }

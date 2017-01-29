@@ -3,6 +3,7 @@ package de.fhb.fbi.acs.maas.todoapp.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -104,12 +105,63 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
 
     @Override
     public int compareTo(TodoItem another) {
-        if (this.isDone() && another.isDone())
-        return 0;
+        if ((this.isDone() && another.isDone()) || (!this.isDone() && !another.isDone()))
+            return 0;
         else if (this.isDone() && !another.isDone()){
             return 1;
         } else
             return -1;
+    }
+
+    public static Comparator<TodoItem> sortByDateAndFavouriteComparator(){
+        return new Comparator<TodoItem>() {
+            @Override
+            public int compare(TodoItem lhs, TodoItem rhs) {
+                int result = lhs.compareTo(rhs);
+
+                if (result == 0) {
+                    if (lhs.getDate() > rhs.getDate()) {
+                        return 1;
+                    } else if (lhs.getDate() < rhs.getDate()) {
+                        return -1;
+                    } else {
+                        if (lhs.isFavourite() && !rhs.isFavourite()){
+                            return -1;
+                        } else if (!lhs.isFavourite() && rhs.isFavourite()){
+                            return 1;
+                        } else
+                            return 0;
+                    }
+                }
+                return result;
+            }
+        };
+    }
+
+    public static Comparator<TodoItem> sortByFavouriteAndDateComparator(){
+        return new Comparator<TodoItem>() {
+            @Override
+            public int compare(TodoItem lhs, TodoItem rhs) {
+                int result = lhs.compareTo(rhs);
+
+                if (result == 0) {
+                   {
+                        if (lhs.isFavourite() && !rhs.isFavourite()){
+                            return -1;
+                        } else if (!lhs.isFavourite() && rhs.isFavourite()){
+                            return 1;
+                        } else {
+                            if (lhs.getDate() > rhs.getDate()) {
+                                return 1;
+                            } else if (lhs.getDate() < rhs.getDate()) {
+                                return -1;
+                            } else return 0;
+                        }
+                    }
+                }
+                return result;
+            }
+        };
     }
 
     //TODO only for debugging reasons! Delete before submitting
@@ -128,13 +180,13 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
 
     public static void main(String[] args) {
         List<TodoItem> items = new ArrayList<>();
-        TodoItem item1 = new TodoItem(-1, "first title","1 description",false,false,0l,0l);
-        TodoItem item2 = new TodoItem(-1, "second title","2 description",true,false,0l,0l);
-        TodoItem item3 = new TodoItem(-1, "third title","3 description",false,false,0l,0l);
-        TodoItem item4 = new TodoItem(-1, "forth title","4 description",true,false,0l,0l);
-        TodoItem item5 = new TodoItem(-1, "fifth title","5 description",false,false,0l,0l);
-        TodoItem item6 = new TodoItem(-1, "sixth title","6 description",true,false,0l,0l);
-        TodoItem item7 = new TodoItem(-1, "seventh title","7 description",true,false,0l,0l);
+        TodoItem item1 = new TodoItem(-1, "first title","1 description",false,true,1234567l,0l);
+        TodoItem item2 = new TodoItem(-1, "second title","2 description",true,false,1234569l,0l);
+        TodoItem item3 = new TodoItem(-1, "third title","3 description",false,false,1234561l,0l);
+        TodoItem item4 = new TodoItem(-1, "forth title","4 description",true,true, 1234563l,0l);
+        TodoItem item5 = new TodoItem(-1, "fifth title","5 description",false,true,1234568l,0l);
+        TodoItem item6 = new TodoItem(-1, "sixth title","6 description",true,true,1234563l,0l);
+        TodoItem item7 = new TodoItem(-1, "seventh title","7 description",true,false,1234562l,0l);
         items.add(item1);
         items.add(item2);
         items.add(item3);
@@ -143,14 +195,27 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
         items.add(item6);
         items.add(item7);
 
+        System.out.println("Initial list");
         for (TodoItem item : items){
-            System.out.println(item);
+            System.out.println(item.isDone + "/" + item.isFavourite() + "/" + item.getDate());
         }
 
-        System.out.println("After sorting");
+        System.out.println("After sorting by isDone");
         Collections.sort(items);
         for (TodoItem item : items){
-            System.out.println(item);
+            System.out.println(item.isDone + "/" + item.isFavourite() + "/" + item.getDate());
+        }
+
+        System.out.println("####after sorting by isDone, Date and Favourite######");
+        Collections.sort(items, sortByDateAndFavouriteComparator());
+        for (TodoItem item : items){
+            System.out.println(item.isDone + "/" + item.isFavourite() + "/" + item.getDate());
+        }
+
+        System.out.println("####after sorting by isDone, Favourite and Date######");
+        Collections.sort(items, sortByFavouriteAndDateComparator());
+        for (TodoItem item : items){
+            System.out.println(item.isDone + "/" + item.isFavourite() + "/" + item.getDate());
         }
     }
 }

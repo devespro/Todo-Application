@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -12,6 +14,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.deves.maus.R;
+
+import java.util.Collections;
+import java.util.List;
 
 import de.fhb.fbi.acs.maas.todoapp.accessors.AbstractActivityDataAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.IntentTodoItemAccessor;
@@ -94,7 +99,7 @@ public class TodoActivity extends Activity {
                 Log.i(LOG_TAG, "onItemClick: position is: " + itemPosition
                         + ", id is: " + itemId);
 
-                TodoItem item = accessor.getSelectedItem(itemPosition,itemId);
+                TodoItem item = accessor.getSelectedItem(itemPosition, itemId);
                 Log.i(LOG_TAG, "INSIDE_ON_ITEM_CLICK: id = " + item.getId());
                 processItemSelection(item);
             }
@@ -135,6 +140,47 @@ public class TodoActivity extends Activity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.sort_date_fav, menu);
+        getMenuInflater().inflate(R.menu.sort_fav_date, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        List<TodoItem> items = ((SQLiteTodoItemListAccessor)accessor).getItems();
+        int id = item.getItemId();
+        switch (id){
+            case R.id.sort_date_fav: {
+                sortItemsByDateAndFavourite(items);
+                ((SQLiteTodoItemListAccessor) accessor).setItems(items);
+                return true;
+            }
+            case R.id.sort_fav_date : {
+                sortItemsByFavouriteAndDate(items);
+                ((SQLiteTodoItemListAccessor) accessor).setItems(items);
+                return true;
+            }
+            default:
+                Log.i(LOG_TAG, "onMenuItemSelected(): invalid item id " + id);
+
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
+
+    private void sortItemsByDateAndFavourite(List<TodoItem> items){
+        Collections.sort(items, TodoItem.sortByDateAndFavouriteComparator());
+        Log.e(LOG_TAG, "AFTER SORTING");
+        for (TodoItem item : items){
+            Log.e(LOG_TAG, "Get an item from list for sorting -> " + item.isDone() + "/" + item.isFavourite() + "/" + item.getDate());
+        }
+    }
+
+    private void sortItemsByFavouriteAndDate(List<TodoItem> items){
+        Collections.sort(items, TodoItem.sortByFavouriteAndDateComparator());
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 

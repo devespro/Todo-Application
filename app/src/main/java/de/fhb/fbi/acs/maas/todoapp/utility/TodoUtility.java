@@ -34,6 +34,7 @@ public class TodoUtility {
     }
 
 
+    /*
     public static void main(String[] args) {
         Date date = new Date(1484607600000L);
 
@@ -48,7 +49,8 @@ public class TodoUtility {
         System.out.println(getStringDateFromLong(1484607600000L));
         System.out.println("#####");
 
-    }
 
+    }
+  */
 
 }

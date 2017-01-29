@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.deves.maus.R;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
@@ -29,6 +30,7 @@ public class TodoItemListViews {
     private static int count = 0;
     private static int checkBoxCount = 0;
     private static final int MAX_TITLE_LENGTH = 12;
+    private static final long MILLISECONDS_IN_ONE_DAY = 86400000L;
     private static final String LOG_TAG = TodoItemListViews.class.getSimpleName();
 
     public static  ArrayAdapter<TodoItem> createTodoItemArrayAdapter(final Activity aContext, final List<TodoItem> aItems) {
@@ -60,19 +62,16 @@ public class TodoItemListViews {
 
                         if (!item.isFavourite()){
                             imageView.setImageResource(R.drawable.star_yellow);
-                            Collections.sort(aItems);
                             item.setIsFavourite(true);
                             mHelper.update(item);
                             notifyDataSetChanged();
                             Log.e(LOG_TAG, "onClick: image " + item);
 
                         } else {
-                            Collections.sort(aItems);
                             imageView.setImageResource(R.drawable.star_grey);
                             Log.e(LOG_TAG, "onClick: image " + item);
                             item.setIsFavourite(false);
                             mHelper.update(item);
-                            Collections.sort(aItems);
                             notifyDataSetChanged();
 
                         }
@@ -98,6 +97,10 @@ public class TodoItemListViews {
 
                 }
 
+                if (item.getDate() + MILLISECONDS_IN_ONE_DAY < new Date().getTime()){
+                    itemDate.setTextColor(Color.RED);
+                }
+
                 checkBox.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -114,7 +117,6 @@ public class TodoItemListViews {
                             notifyDataSetChanged();
                             Log.e("MY_TAG", "checkbox click onClickListener -> status unchecked");
                         }
-                        //checkBoxCount++;
                     }
                 });
                 return layout;

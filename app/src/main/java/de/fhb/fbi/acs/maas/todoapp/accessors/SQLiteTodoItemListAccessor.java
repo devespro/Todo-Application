@@ -33,8 +33,8 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
     @Override
     public void addItem(TodoItem item) {
         mHelper.insert(item);
-
         this.adapter.add(item);
+        Collections.sort(getItems());
     }
 
     @Override
@@ -101,6 +101,11 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
 
     public List<TodoItem> getItems() {
         return items;
+    }
+
+    public void setItems(List<TodoItem> items) {
+        this.items = items;
+        this.adapter.notifyDataSetChanged();
     }
 
     @Override

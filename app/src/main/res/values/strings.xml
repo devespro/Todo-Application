@@ -12,4 +12,8 @@
     <string name="description_hint">Enter your description here</string>
     <string name="checkbox_is_favourite_title">Mark as favourite</string>
     <string name="checkbox_is_done_title">Mark as done</string>
+
+    <!-- Sorting -->
+    <string name="sort_date_fav">Sort date-fav</string>
+    <string name="sort_fav_date">Sort fav-date</string>
 </resources>
