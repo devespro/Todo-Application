@@ -75,6 +75,7 @@ public class TodoActivity extends Activity {
 
         // the button for adding new items
         Button newitemButton = (Button) findViewById(R.id.newitemButton);
+        //TODO during rest connection -> remote ItemListAccessor
         accessor = new SQLiteTodoItemListAccessor();
 
         if (accessor instanceof AbstractActivityDataAccessor) {
