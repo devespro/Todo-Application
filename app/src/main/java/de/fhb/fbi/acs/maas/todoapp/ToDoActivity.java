@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.deves.maus.R;
 
@@ -96,7 +97,13 @@ public class TodoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
 
-        getActionBar().setHomeButtonEnabled(true);
+        //getActionBar().setHomeButtonEnabled(true);
+
+        String connectionStatus = getIntent().getExtras().getString(LoginActivity.CONNECTION_STATUS);
+        Log.e(LOG_TAG, "onCreate: status-> " + connectionStatus);
+
+        TextView connectionStatusTextView = (TextView) findViewById(R.id.connection_status);
+        setConnectionStatus(connectionStatusTextView,connectionStatus);
 
         listview = (ListView) findViewById(R.id.list);
         registerForContextMenu(listview);
@@ -164,6 +171,18 @@ public class TodoActivity extends Activity {
         // start the details activity with the intent
         startActivityForResult(intent, REQUEST_ITEM_DETAILS);
 
+    }
+
+    private void setConnectionStatus(TextView view, String connectionStatus){
+        if (connectionStatus.equals("offline")){
+            view.setText(" offline ");
+            view.setCompoundDrawablesWithIntrinsicBounds(
+                    android.R.drawable.presence_offline, 0, 0, 0);
+        } else {
+            view.setText(" online ");
+            view.setCompoundDrawablesWithIntrinsicBounds(
+                    android.R.drawable.presence_online, 0, 0, 0);
+        }
     }
 
     @Override

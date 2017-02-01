@@ -113,11 +113,12 @@ public class ItemDetailsActivity extends Activity {
         viewHolder.deleteButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ItemDetailsActivity.this);
-                dialogBuilder.setMessage("Delete current item?");
-                dialogBuilder.setCancelable(true);
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(ItemDetailsActivity.this);
+                alertBuilder.setTitle("Delete current item?");
+                alertBuilder.setMessage("This operation cannot be undone. Would you like to proceed?");
+                alertBuilder.setCancelable(true);
 
-                dialogBuilder.setPositiveButton(
+                alertBuilder.setPositiveButton(
                         "Yes",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -126,16 +127,17 @@ public class ItemDetailsActivity extends Activity {
                             }
                         });
 
-                dialogBuilder.setNegativeButton(
+                alertBuilder.setNegativeButton(
                         "No",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         });
+                alertBuilder.setIcon(android.R.drawable.ic_dialog_alert);
 
-                AlertDialog alertDialog = dialogBuilder.create();
-                alertDialog.show();
+                AlertDialog alert11 = alertBuilder.create();
+                alert11.show();
             }
         });
 

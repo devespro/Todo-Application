@@ -34,6 +34,8 @@ import de.fhb.fbi.acs.maas.todoapp.model.Credentials;
 public class LoginActivity extends Activity {
     public static final String EMAIL_PATTERN = "[A-Z0-9._%+-]+@[A-Z0-9-]+\\.[A-Z]{2,4}";
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
+    public static final String CONNECTION_STATUS = "connectionStatus";
+    private String connectionStatus = "offline";
 
     /**
      * the UI elements
@@ -172,6 +174,7 @@ public class LoginActivity extends Activity {
     private void startToDoActivity() {
 
         Intent intent = new Intent(this, TodoActivity.class);
+        intent.putExtra(CONNECTION_STATUS, connectionStatus);
         startActivity(intent);
     }
 
@@ -200,6 +203,7 @@ public class LoginActivity extends Activity {
             if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
                 Log.i(LOG_TAG, "User validation - success");
+                connectionStatus="online";
                 return true;
 
             } else {
@@ -207,7 +211,7 @@ public class LoginActivity extends Activity {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            connectionStatus = "offline";
         }
         return false;
     }
