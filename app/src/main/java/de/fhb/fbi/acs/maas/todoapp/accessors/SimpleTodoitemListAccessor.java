@@ -60,7 +60,7 @@ public class SimpleTodoitemListAccessor extends AbstractActivityDataAccessor imp
     }
 
     @Override
-    public TodoItem getSelectedItem(int itemPosition, long itemId) {
+    public TodoItem getSelectedItem(int itemPosition) {
         return null;
     }
 

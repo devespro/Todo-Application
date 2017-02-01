@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,6 +61,9 @@ public class TodoActivity extends Activity {
      * the constant for the new item request
      */
     public static final int REQUEST_ITEM_CREATION = 1;
+    public static final int DELETE_CONTEXT_MENU_ID = 1;
+    public static final int CANCEL_CONTEXT_MENU_ID = 2;
+    public static final int EDIT_CONTEXT_MENU_ID = 3;
     private ListView listview;
     /**
      * the data accessor for the data items
@@ -67,12 +71,35 @@ public class TodoActivity extends Activity {
     private TodoItemListAccessor accessor;
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Available actions");
+        menu.setHeaderIcon(android.R.drawable.ic_menu_delete);
+        menu.add(0, EDIT_CONTEXT_MENU_ID, 0, "Edit");
+        menu.add(0, DELETE_CONTEXT_MENU_ID, 0, "Delete");
+        menu.add(0, CANCEL_CONTEXT_MENU_ID, 0, "Cancel");
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Log.e(LOG_TAG, "onContextItemSelected: id-> " + item.getItemId());
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int listPosition = info.position;
+        TodoItem item1 = accessor.getSelectedItem(listPosition);
+        Log.e(LOG_TAG, "onContextItemSelected: id-> " + item1.getId());
+        return false;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
 
-        listview = (ListView) findViewById(R.id.list);
+        getActionBar().setHomeButtonEnabled(true);
 
+        listview = (ListView) findViewById(R.id.list);
+        registerForContextMenu(listview);
         // the button for adding new items
         Button newitemButton = (Button) findViewById(R.id.newitemButton);
         //TODO during rest connection -> remote ItemListAccessor
@@ -99,7 +126,7 @@ public class TodoActivity extends Activity {
 
                 Log.i(LOG_TAG, "onItemClick: position is: " + itemPosition
                         + ", id is: " + itemId);
-                TodoItem item = accessor.getSelectedItem(itemPosition, itemId);
+                TodoItem item = accessor.getSelectedItem(itemPosition);
                 processItemSelection(item);
             }
 
@@ -108,10 +135,10 @@ public class TodoActivity extends Activity {
         newitemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(TodoActivity.this, "Add button has been clicked", Toast.LENGTH_SHORT).show();
                 processNewItemRequest();
             }
         });
+
     }
 
     private void processNewItemRequest() {

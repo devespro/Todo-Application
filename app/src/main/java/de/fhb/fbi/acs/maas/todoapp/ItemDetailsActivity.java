@@ -1,6 +1,8 @@
 package de.fhb.fbi.acs.maas.todoapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -111,8 +113,29 @@ public class ItemDetailsActivity extends Activity {
         viewHolder.deleteButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(LOG_TAG, "onClick: deleting the item...");
-                processItemDelete(accessor);
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ItemDetailsActivity.this);
+                dialogBuilder.setMessage("Delete current item?");
+                dialogBuilder.setCancelable(true);
+
+                dialogBuilder.setPositiveButton(
+                        "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Log.i(LOG_TAG, "onClick: deleting the item with id " + id);
+                                processItemDelete(accessor);
+                            }
+                        });
+
+                dialogBuilder.setNegativeButton(
+                        "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
             }
         });
 

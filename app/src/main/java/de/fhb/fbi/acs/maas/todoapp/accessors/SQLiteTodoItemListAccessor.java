@@ -107,7 +107,7 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
     }
 
     @Override
-    public TodoItem getSelectedItem(int itemPosition, long itemId) {
+    public TodoItem getSelectedItem(int itemPosition) {
         return adapter.getItem(itemPosition);
     }
 

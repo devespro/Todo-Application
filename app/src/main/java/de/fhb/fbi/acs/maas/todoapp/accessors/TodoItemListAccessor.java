@@ -42,13 +42,12 @@ public interface TodoItemListAccessor {
 
     /**
      * determine the item selected by the user given either the position in the
-     * list or the item id
+     * list
      *
      * @param itemPosition
-     * @param itemId
      * @return
      */
-    TodoItem getSelectedItem(int itemPosition, long itemId);
+    TodoItem getSelectedItem(int itemPosition);
 
     /**
      * end processing the list of items

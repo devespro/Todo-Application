@@ -51,9 +51,9 @@ public class TodoItemListViews {
                 itemTimeTextView.setText(TodoUtility.formatTime(item.getTime()));
 
                 if (!item.isFavourite()) {
-                    imageView.setImageResource(R.drawable.star_grey);
+                    imageView.setImageResource(android.R.drawable.star_off);
                 } else {
-                    imageView.setImageResource(R.drawable.star_yellow);
+                    imageView.setImageResource(R.drawable.star_on);
                 }
                 imageView.setOnClickListener(new OnClickListener() {
                     @Override
