@@ -3,7 +3,7 @@ package de.fhb.fbi.acs.maas.todoapp.model;
 import java.io.Serializable;
 
 /**
- * @author Esien Novruzov
+ * @author novruzov
  */
 public abstract class GenericEntity implements Serializable {
     protected static long ID;
@@ -25,7 +25,6 @@ public abstract class GenericEntity implements Serializable {
         GenericEntity that = (GenericEntity) o;
 
         return id == that.id;
-
     }
 
     @Override

@@ -8,7 +8,7 @@ import android.text.format.Time;
 
 /**
  * Defines table and column names for the todoitems database
- * @author Esien Novruzov
+ * @author novruzov
  */
 public class TodoContract {
     // The "Content authority" is a name for the entire content provider, similar to the

@@ -21,13 +21,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import de.fhb.fbi.acs.maas.todoapp.accessors.AbstractActivityDataAccessor;
-import de.fhb.fbi.acs.maas.todoapp.accessors.DataItemAccessor;
+import de.fhb.fbi.acs.maas.todoapp.accessors.TodoItemAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.IntentTodoItemAccessor;
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 import de.fhb.fbi.acs.maas.todoapp.utility.TodoUtility;
 
 /**
- * @author Esien Novruzov
+ * @author novruzov
  */
 public class ItemDetailsActivity extends Activity {
 
@@ -36,7 +36,7 @@ public class ItemDetailsActivity extends Activity {
     /**
      * the accessor for dealing with the item to be displayed and edited
      */
-    private DataItemAccessor accessor;
+    private TodoItemAccessor accessor;
 
     /**
      * Called when the activity is first created.
@@ -54,7 +54,6 @@ public class ItemDetailsActivity extends Activity {
 
         final ViewHolder viewHolder = new ViewHolder(this);
 
-
         TodoItem todoItem = accessor.readItem();
 
         if (todoItem != null) {
@@ -66,27 +65,29 @@ public class ItemDetailsActivity extends Activity {
                 viewHolder.timeAsText.setText(TodoUtility.formatTime(todoItem.getTime()));
             }
         }
-        Calendar calendar = todoItem == null ? Calendar.getInstance() : TodoUtility.getCalendarFromLong(todoItem.getDate());
 
-        viewHolder.itemDate.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+        Calendar calendar = todoItem == null ? null : TodoUtility.getCalendarFromLong(todoItem.getDate());
+        if (calendar != null) {
 
-            @Override
-            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                GregorianCalendar calendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);
-                viewHolder.dateAsText.setText(TodoUtility.formatDate(calendar.getTimeInMillis()));
-            }
-        });
+            viewHolder.itemDate.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
 
-        viewHolder.itemTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
-            @Override
-            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                viewHolder.timeAsText.setText(String.format("%02d:%02d", hourOfDay, minute));
-            }
-        });
+                @Override
+                public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    GregorianCalendar calendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+                    viewHolder.dateAsText.setText(TodoUtility.formatDate(calendar.getTimeInMillis()));
+                }
+            });
+
+            viewHolder.itemTime.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+                @Override
+                public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                    viewHolder.timeAsText.setText(String.format("%02d:%02d", hourOfDay, minute));
+                }
+            });
+        }
 
         // if we do not have an item, we assume we need to create a new one
         if (accessor.hasItem()) {
-            // set name and description
             TodoItem item = accessor.readItem();
             viewHolder.itemTitle.setText(item.getTitle());
             viewHolder.itemDescription.setText(item.getDescription());
@@ -143,23 +144,49 @@ public class ItemDetailsActivity extends Activity {
 
     }
 
-    private void processItemSave(DataItemAccessor accessor, ViewHolder viewHolder){
+    private void processItemSave(TodoItemAccessor accessor, ViewHolder viewHolder){
         TodoItem item = accessor.readItem();
         item.setTitle(viewHolder.itemTitle.getText().toString());
         item.setDescription(viewHolder.itemDescription.getText().toString());
         item.setIsDone(viewHolder.itemIsDone.isChecked());
         item.setIsFavourite(viewHolder.itemIsFavourite.isChecked());
 
-        GregorianCalendar calendar = new GregorianCalendar(viewHolder.itemDate.getYear(), viewHolder.itemDate.getMonth(), viewHolder.itemDate.getDayOfMonth());
-        item.setDate(calendar.getTimeInMillis());
-        Calendar mCalendar = Calendar.getInstance();
-        mCalendar.set(Calendar.HOUR_OF_DAY, viewHolder.itemTime.getCurrentHour());
-        mCalendar.set(Calendar.MINUTE, viewHolder.itemTime.getCurrentMinute());
-        item.setTime(mCalendar.getTimeInMillis());
-        // save the item
+        if (isDateChanged(viewHolder)) {
+            GregorianCalendar calendar = new GregorianCalendar(viewHolder.itemDate.getYear(), viewHolder.itemDate.getMonth(), viewHolder.itemDate.getDayOfMonth());
+            item.setDate(calendar.getTimeInMillis());
+        }
+        if (isTimeChanged(viewHolder)) {
+            Calendar mCalendar = Calendar.getInstance();
+            mCalendar.set(Calendar.HOUR_OF_DAY, viewHolder.itemTime.getCurrentHour());
+            mCalendar.set(Calendar.MINUTE, viewHolder.itemTime.getCurrentMinute());
+            item.setTime(mCalendar.getTimeInMillis());
+        }
         accessor.writeItem();
-        // and finish
         finish();
+    }
+
+    private boolean isTimeChanged(ViewHolder viewHolder) {
+        Calendar widgetTime = Calendar.getInstance();
+        widgetTime.set(Calendar.HOUR_OF_DAY, viewHolder.itemTime.getCurrentHour());
+        widgetTime.set(Calendar.MINUTE, viewHolder.itemTime.getCurrentMinute());
+        int widgetHour = widgetTime.getTime().getHours();
+        int widgetMinute = widgetTime.getTime().getMinutes();
+
+        Calendar currentDate = Calendar.getInstance();
+        int currentHour = currentDate.getTime().getHours();
+        int currentMinute = currentDate.getTime().getMinutes();
+
+        return (widgetHour != currentHour || widgetMinute != currentMinute);
+    }
+
+    private boolean isDateChanged(ViewHolder viewHolder){
+        Calendar widgetDate = new GregorianCalendar(viewHolder.itemDate.getYear(), viewHolder.itemDate.getMonth(),
+                viewHolder.itemDate.getDayOfMonth());
+        Calendar currentDate = Calendar.getInstance();
+        int widgetFields = widgetDate.get(Calendar.YEAR) + widgetDate.get(Calendar.MONTH) + widgetDate.get(Calendar.DAY_OF_MONTH);
+        int currentFields = currentDate.get(Calendar.YEAR) + currentDate.get(Calendar.MONTH) + currentDate.get(Calendar.DAY_OF_MONTH);
+        boolean result = widgetFields != currentFields;
+        return result;
     }
 
     /**
@@ -167,7 +194,7 @@ public class ItemDetailsActivity extends Activity {
      *
      * @param accessor
      */
-    protected void processItemDelete(DataItemAccessor accessor) {
+    protected void processItemDelete(TodoItemAccessor accessor) {
         // delete the item
         accessor.deleteItem();
 
@@ -176,8 +203,8 @@ public class ItemDetailsActivity extends Activity {
     }
 
     /**
-     * UI elements of the item's detail view
-     * example of view holder pattern
+     * UI elements of the item's detail view.
+     * View holder pattern
      */
     public static class ViewHolder {
         public final EditText itemTitle;

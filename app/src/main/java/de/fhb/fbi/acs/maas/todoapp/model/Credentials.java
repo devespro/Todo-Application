@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * The Credential class represents the login data used by server for user validation
- * @author Esien Novruzov
+ * @author novruzov
  */
 public class Credentials implements Serializable {
 

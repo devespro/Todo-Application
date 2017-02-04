@@ -12,7 +12,7 @@ import java.util.List;
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 
 /**
- * Created by Esien Novruzov on 28/01/17.
+ * @author novruzov
  */
 public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor implements TodoItemListAccessor {
 
@@ -69,8 +69,7 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
     @Override
     public void updateItem(TodoItem item) {
         mHelper.update(item);
-        // then update the item and notify the adapter
-        Log.e(LOG_TAG, "updateItem CHECKBOX " + item.isFavourite());
+        Log.i(LOG_TAG, "updateItem: updating  " + item);
         lookupItem(item).updateFrom(item);
         this.adapter.notifyDataSetChanged();
 
@@ -79,13 +78,12 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
     @Override
     public void deleteItem(TodoItem item) {
         mHelper.delete(item);
-
         this.adapter.remove(lookupItem(item));
     }
 
-    /**
+    /*
      * get the item from the list, checking identity of ids (as the argument
-     * value may have been serialised/deserialised we cannot check for identity
+     * value may have been serialised/deserialized we cannot check for identity
      * of objects)
      */
     private TodoItem lookupItem(TodoItem item) {

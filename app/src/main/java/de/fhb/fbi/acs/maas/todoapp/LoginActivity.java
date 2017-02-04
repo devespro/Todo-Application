@@ -17,25 +17,24 @@ import android.widget.TextView;
 
 import com.deves.maus.R;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.fhb.fbi.acs.maas.todoapp.model.Credentials;
+import de.fhb.fbi.acs.maas.todoapp.accessors.LoginService;
+import de.fhb.fbi.acs.maas.todoapp.accessors.RemoteLoginService;
 
 /**
- * @author Esien Novruzov
+ * @author novruzov
  */
 public class LoginActivity extends Activity {
     public static final String EMAIL_PATTERN = "[A-Z0-9._%+-]+@[A-Z0-9-]+\\.[A-Z]{2,4}";
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
     public static final String CONNECTION_STATUS = "connectionStatus";
     private String connectionStatus = "offline";
+    private static int firstFocus = 0;
 
     /**
      * the UI elements
@@ -45,7 +44,7 @@ public class LoginActivity extends Activity {
     private EditText password;
     private Button loginButton;
 
-    private ObjectMapper mObjectMapper = new ObjectMapper();
+    private LoginService loginService = new RemoteLoginService();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +65,11 @@ public class LoginActivity extends Activity {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
-
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     errorTextView.setText("");
                     updateLoginButtonState();
                 }
-
                 @Override
                 public void afterTextChanged(Editable s) {
                 }
@@ -81,20 +78,16 @@ public class LoginActivity extends Activity {
             email.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (email.getText().toString().isEmpty() || email.getText().toString() == "") {
-                        errorTextView.setText(R.string.error_massage_empty_email);
-                        Log.i(LOG_TAG, "onEditorAction: the submitted email was empty");
-                        return true;
-                    } else {
-                        if (isValidEmail(email.getText().toString())) {
-                            Log.i(LOG_TAG, "onEditorAction: the submitted email was valid");
-                            return false;
-                        } else {
-                            errorTextView.setText(R.string.error_massage_incorrect_email);
-                            Log.e(LOG_TAG, "onEditorAction: the submitted email was invalid");
-                            return true;
-                        }
-                    }
+                    return processEmailChanges();
+                }
+            });
+
+            email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (firstFocus != 0)
+                        processEmailChanges();
+                    firstFocus++;
                 }
             });
 
@@ -102,10 +95,13 @@ public class LoginActivity extends Activity {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        if (loginButton.isEnabled())
-                            Log.i(LOG_TAG, "onEditorAction: " + " sending the input data for checking");
-                        MyTaskParams myTaskParams = new MyTaskParams(email.getText().toString(), password.getText().toString());
-                        runSyncDialog(myTaskParams);
+                        if (loginButton.isEnabled()) {
+                            String submittedEmail = email.getText().toString();
+                            String submittedPassword = password.getText().toString();
+                            Log.i(LOG_TAG, "onEditorAction: " + " sending the input data for checking: " + submittedEmail + ", " + submittedPassword);
+                            MyTaskParams myTaskParams = new MyTaskParams(submittedEmail, submittedPassword);
+                            runSyncDialog(myTaskParams);
+                        }
                     }
                     return false;
                 }
@@ -140,16 +136,14 @@ public class LoginActivity extends Activity {
                     runSyncDialog(myTaskParams);
                 }
             });
-
-
         } else {
             startToDoActivity();
         }
     }
 
-    /**
-     * The login button is enabled only when a valid email and a 6-digit password are submitted
-     */
+
+    //the login button is enabled only when a valid email and a 6-digit password are submitted
+
     private void updateLoginButtonState() {
         if (email != null && password != null && !email.getText().toString().isEmpty() &&
                 !password.getText().toString().isEmpty() && isValidEmail(email.getText().toString()) &&
@@ -158,6 +152,23 @@ public class LoginActivity extends Activity {
             loginButton.setEnabled(true);
         } else {
             loginButton.setEnabled(false);
+        }
+    }
+
+    private boolean processEmailChanges(){
+        if (email.getText().toString().isEmpty() || email.getText().toString() == "") {
+            errorTextView.setText(R.string.error_massage_empty_email);
+            Log.e(LOG_TAG, "onEditorAction: the submitted email was empty");
+            return true;
+        } else {
+            if (isValidEmail(email.getText().toString())) {
+                Log.i(LOG_TAG, "onEditorAction: the submitted email was valid");
+                return false;
+            } else {
+                errorTextView.setText(R.string.error_massage_incorrect_email);
+                Log.e(LOG_TAG, "onEditorAction: the submitted email was invalid");
+                return true;
+            }
         }
     }
 
@@ -172,7 +183,6 @@ public class LoginActivity extends Activity {
     }
 
     private void startToDoActivity() {
-
         Intent intent = new Intent(this, TodoActivity.class);
         intent.putExtra(CONNECTION_STATUS, connectionStatus);
         startActivity(intent);
@@ -183,54 +193,23 @@ public class LoginActivity extends Activity {
     }
 
     private boolean processLogin(String email, String password) {
-        Credentials credentials = new Credentials(email, password);
-        // obtain a http url connection from the base url
-        HttpURLConnection con;
-        try {
-            con = (HttpURLConnection) (new URL(getRestLoginBaseUrl())).openConnection();
-            Log.d(LOG_TAG, "processLogin(): got connection: " + con);
-
-            con.setRequestMethod("POST");
-            // indicate that we want to send a request body
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setDoOutput(true);
-            // obtain the output stream and write the item as json object to it
-            OutputStream os = con.getOutputStream();
-            os.write(mObjectMapper.writeValueAsString(credentials).getBytes());
-            // then initiate sending the request...
-            // InputStream is = con.getInputStream();
-            // check the response code
-            if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                Log.i(LOG_TAG, "User validation - success");
-                connectionStatus="online";
-                return true;
-
-            } else {
-                Log.e(LOG_TAG, "Invalid login: got response code: " + con.getResponseCode());
-            }
-
-        } catch (IOException e) {
-            connectionStatus = "offline";
+        boolean isValidAttempt = loginService.processLogin(email,password);
+        if (isValidAttempt){
+            connectionStatus = "online";
         }
-        return false;
+        return isValidAttempt;
     }
 
     /**
      * Run a dialog that is synchronised with some background process
      */
     public void runSyncDialog(MyTaskParams params) {
-        Log.e(LOG_TAG, "runSyncDialog: EMAIL -> " + params.email + " pas " + params.password);
+        Log.i(LOG_TAG, "runSyncDialog: EMAIL -> " + params.email + " pas " + params.password);
         LoginTask loginTask = new LoginTask();
         loginTask.execute(params);
 
     }
 
-    /**
-     * get the baseUrl of the webapp used as data source and media resource provider
-     *
-     * @return
-     */
     private String getWebappBaseUrl() {
         return "http://10.0.2.2:8080/DataAccessRemoteWebapp/";
     }
@@ -299,7 +278,6 @@ public class LoginActivity extends Activity {
             return new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
-                    Log.e(LOG_TAG, "checkServerConnection: INSIDE CHECK_SERVER");
                     try {
                         HttpURLConnection con = (HttpURLConnection)(new URL(getRestLoginBaseUrl())).openConnection();
                         con.getResponseCode();
@@ -312,7 +290,6 @@ public class LoginActivity extends Activity {
                 @Override
                 protected void onPostExecute(Boolean aBoolean) {
                     super.onPostExecute(aBoolean);
-                    Log.e(LOG_TAG, "STATUS _> " + aBoolean);
                 }
             }.execute().get();
         } catch (Exception e) {

@@ -12,7 +12,7 @@ import java.util.Locale;
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 
 /**
- * @author Esien Novruzov
+ * @author novruzov
  * //TODO extends SQLiteOpenHelper
  */
 public class SQLiteDBHelper{
@@ -92,7 +92,7 @@ public class SQLiteDBHelper{
      * the ContentValues object is needed to save the object into the db
      */
     public static ContentValues createDBTodoItem(TodoItem item){
-        Log.e(LOG_TAG, "insert into db: " + item);
+        Log.i(LOG_TAG, "insert into db: " + item);
         ContentValues insertItem = new ContentValues();
         insertItem.put(TodoContract.TodoEntry.COLUMN_TITLE, item.getTitle());
         insertItem.put(TodoContract.TodoEntry.COLUMN_DESCRIPTION, item.getDescription());

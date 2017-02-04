@@ -97,8 +97,6 @@ public class TodoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
 
-        //getActionBar().setHomeButtonEnabled(true);
-
         String connectionStatus = getIntent().getExtras().getString(LoginActivity.CONNECTION_STATUS);
         Log.e(LOG_TAG, "onCreate: status-> " + connectionStatus);
 
@@ -116,12 +114,9 @@ public class TodoActivity extends Activity {
             ((AbstractActivityDataAccessor) accessor).setActivity(this);
         }
 
-        // obtain the adapter from the accessor, passing it the id of the
-        // item layout to be used
         final ListAdapter adapter = accessor.getAdapter();
         listview.setAdapter(adapter);
 
-        // set the listview as scrollable
         listview.setScrollBarStyle(ListView.SCROLLBARS_INSIDE_OVERLAY);
 
         // set a listener that reacts to the selection of an element

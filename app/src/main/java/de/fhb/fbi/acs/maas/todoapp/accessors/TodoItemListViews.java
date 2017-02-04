@@ -1,13 +1,8 @@
 package de.fhb.fbi.acs.maas.todoapp.accessors;
 
-/**
- * Created by Esien Novruzov on 19/01/17.
- */
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -25,7 +20,9 @@ import java.util.List;
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 import de.fhb.fbi.acs.maas.todoapp.utility.TodoUtility;
 
-
+/**
+ * @author novruzov
+ */
 public class TodoItemListViews {
     private static final int MAX_TITLE_LENGTH = 12;
     private static final long MILLISECONDS_IN_ONE_DAY = 86400000L;
@@ -64,17 +61,12 @@ public class TodoItemListViews {
                             item.setIsFavourite(true);
                             mHelper.update(item);
                             notifyDataSetChanged();
-                            Log.e(LOG_TAG, "onClick: image " + item);
-
                         } else {
                             imageView.setImageResource(R.drawable.star_grey);
-                            Log.e(LOG_TAG, "onClick: image " + item);
                             item.setIsFavourite(false);
                             mHelper.update(item);
                             notifyDataSetChanged();
-
                         }
-                        //count++;
                     }
                 });
 
@@ -84,7 +76,6 @@ public class TodoItemListViews {
                     itemTitle.setTextColor(Color.GRAY);
                     itemDate.setTextColor(Color.GRAY);
                     itemTimeTextView.setTextColor(Color.GRAY);
-                    Log.e("MY_TAG", "checkbox initializing -> status checked");
                     itemTitle.setPaintFlags(itemTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 } else {
                     itemTitle.setTextColor(Color.WHITE);
@@ -92,10 +83,9 @@ public class TodoItemListViews {
                     itemTimeTextView.setTextColor(Color.WHITE);
                     itemTitle.setPaintFlags(itemTitle.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     checkBox.setChecked(false);
-                    Log.e("MY_TAG", "checkbox initializing -> status unchecked");
                 }
 
-                if (item.getDate() + MILLISECONDS_IN_ONE_DAY < new Date().getTime()){
+                if (item.getDate() != 0 && item.getDate() + MILLISECONDS_IN_ONE_DAY < new Date().getTime()){
                     itemDate.setTextColor(Color.RED);
                 }
                 checkBox.setOnClickListener(new OnClickListener() {
@@ -106,19 +96,16 @@ public class TodoItemListViews {
                             mHelper.update(item);
                             Collections.sort(aItems);
                             notifyDataSetChanged();
-                            Log.e("MY_TAG", "checkbox click onClickListener -> status checked");
                         } else {
                             item.setIsDone(false);
                             mHelper.update(item);
                             Collections.sort(aItems);
                             notifyDataSetChanged();
-                            Log.e("MY_TAG", "checkbox click onClickListener -> status unchecked");
                         }
                     }
                 });
                 return layout;
             }
-
         };
     }
 
@@ -128,7 +115,4 @@ public class TodoItemListViews {
         } else
             return title;
     }
-
-    //TODO add ViewHolder pattern
-
 }

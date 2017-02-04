@@ -3,7 +3,7 @@ package de.fhb.fbi.acs.maas.todoapp.accessors;
 import android.app.Activity;
 
 /**
- * Created by Esien Novruzov on 19/01/17.
+ * @author novruzov
  */
 public abstract class AbstractActivityDataAccessor {
 
