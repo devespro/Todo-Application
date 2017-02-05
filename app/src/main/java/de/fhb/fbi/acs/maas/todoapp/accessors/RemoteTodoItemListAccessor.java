@@ -27,7 +27,7 @@ public class RemoteTodoItemListAccessor extends AbstractActivityDataAccessor imp
 
     @Override
     public ArrayAdapter getAdapter(List<TodoItem> todos) {
-
+        this.todos = todos;
         this.adapter = TodoItemListViews.createTodoItemArrayAdapter(getActivity(),todos);
         Collections.sort(todos);
         this.adapter.setNotifyOnChange(true);
@@ -60,8 +60,9 @@ public class RemoteTodoItemListAccessor extends AbstractActivityDataAccessor imp
         if (comparisonMode) {
             addAndRemoveOldItems(items);
         }
-        this.todos = items;
-        //this.adapter.notifyDataSetChanged();
+        this.todos.clear();
+        this.todos.addAll(items);
+        this.adapter.notifyDataSetChanged();
     }
 
     private void addAndRemoveOldItems(List<TodoItem> items){
