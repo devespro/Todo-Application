@@ -58,6 +58,6 @@ public interface TodoItemListAccessor {
      */
     void close();
 
-    void setItems(List<TodoItem> items);
+    void setItems(List<TodoItem> items, boolean comparisonMode);
 
 }

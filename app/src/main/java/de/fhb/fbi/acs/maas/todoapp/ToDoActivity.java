@@ -208,20 +208,21 @@ public class TodoActivity extends Activity {
         List<TodoItem> localItems = localAccesor.getAll();
         Log.e(LOG_TAG, "processDataBankComparison: LOCAL_ITEMS " + localItems );
         List<TodoItem> remoteItems = remoteAccessor.getAll();
-        Log.e(LOG_TAG, "processDataBankComparison: Remote_ITEMS " + remoteItems );
+        Log.e(LOG_TAG, "processDataBankComparison: Remote_ITEMS " + remoteItems);
 
         if (localItems.size() == 0) {
-            localAccesor.setItems(remoteItems);
+            localAccesor.setItems(remoteItems, true);
             items = remoteItems;
-        } else {
+            return items;
+        } else if (localItems.size() != remoteItems.size()){
             remoteItems.clear();
             remoteItems.addAll(localItems);
-            remoteAccessor.setItems(localItems);
+            remoteAccessor.setItems(localItems,true);
             items = localItems;
+            return items;
         }
 
-
-        return items;
+        return (accessor instanceof SQLiteTodoItemListAccessor) ? localItems : remoteItems;
     }
 
     private void processNewItemRequest() {
@@ -249,9 +250,6 @@ public class TodoActivity extends Activity {
 
     }
 
-    private void processItemsUpdate(){
-
-    }
     private void setConnectionStatus(TextView view, String connectionStatus){
         if (connectionStatus.equals("offline")){
             view.setText(" offline ");
@@ -280,28 +278,29 @@ public class TodoActivity extends Activity {
         } else {
             items = getRemoteAll((RemoteTodoItemListAccessor)accessor);
         }
+        Log.e(LOG_TAG, "onMenuItemSelected: all items " + items );
         int id = item.getItemId();
         switch (id){
             case R.id.sort_date_fav: {
                 if (accessor instanceof RemoteTodoItemListAccessor){
                     processRemoteSortByDateAndFavourite(items);
                     Log.e(LOG_TAG, "Sorting : sort_date_fav");
-                    accessor.setItems(items);
+                    accessor.setItems(items, false);
                     return true;
                 }
                 sortItemsByDateAndFavourite(items);
-                accessor.setItems(items);
+                accessor.setItems(items, false);
                 return true;
             }
             case R.id.sort_fav_date : {
                 if (accessor instanceof RemoteTodoItemListAccessor){
                     processRemoteSortByFavouriteAndDate(items);
                     Log.e(LOG_TAG, "Sorting : sort_fav_date");
-                    accessor.setItems(items);
+                    accessor.setItems(items, false);
                     return true;
                 }
                 sortItemsByFavouriteAndDate(items);
-                accessor.setItems(items);
+                accessor.setItems(items, false);
                 return true;
             }
             default:

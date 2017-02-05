@@ -159,7 +159,6 @@ public class TodoItemListViews {
     }
 
     private static void processRemoteItemUpdate(final List<TodoItem> items, TodoItem item){
-        Log.e(LOG_TAG, "processRemoteItemUpdate: " + item);
         new AsyncTask<TodoItem, Void, TodoItem>() {
             @Override
             protected TodoItem doInBackground(TodoItem... items) {

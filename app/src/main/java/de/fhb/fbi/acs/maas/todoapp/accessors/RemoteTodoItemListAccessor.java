@@ -56,8 +56,10 @@ public class RemoteTodoItemListAccessor extends AbstractActivityDataAccessor imp
     }
 
     @Override
-    public void setItems(List<TodoItem> items) {
-        addAndRemoveOldItems(items);
+    public void setItems(List<TodoItem> items, boolean comparisonMode) {
+        if (comparisonMode) {
+            addAndRemoveOldItems(items);
+        }
         this.todos = items;
         //this.adapter.notifyDataSetChanged();
     }

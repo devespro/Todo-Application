@@ -102,9 +102,13 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
         return items;
     }
 
-    public void setItems(List<TodoItem> items) {
+    public void setItems(List<TodoItem> items, boolean comparisonMode) {
+        Log.e(LOG_TAG, "setItems: " + "INSIDE_SET_ITEMS");
         this.items = items;
-        addItemsIntoDB(items);
+        if (comparisonMode) {
+            addItemsIntoDB(items);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     private void addItemsIntoDB(List<TodoItem> items){
