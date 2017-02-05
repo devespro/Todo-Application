@@ -162,7 +162,7 @@ public class TodoActivity extends Activity {
             }
         });
 
-        // finally, we add the itemlist asynchronously
+        //we add the itemlist asynchronously
         new AsyncTask<Void, Void, List<TodoItem>>() {
             @Override
             protected List<TodoItem> doInBackground(Void... items) {
@@ -178,6 +178,50 @@ public class TodoActivity extends Activity {
             }
         }.execute();
 
+        //if we have any todos in a local db -> we delete all items on the server side and transfer
+        //local todos to the server, else we transfer remote todos into the databank
+        //of course, asynchronously
+        new AsyncTask<Void, Void, List<TodoItem>>() {
+            @Override
+            protected List<TodoItem> doInBackground(Void... items) {
+                Log.e(LOG_TAG, "onPostExecute: INSIDE_ON_BACKGROUND" );
+                return processDataBankComparison();
+            }
+
+            @Override
+            protected void onPostExecute(List<TodoItem> items) {
+                Log.e(LOG_TAG, "onPostExecute: INSIDE_ONPOST" + items);
+                itemlist.clear();
+                itemlist.addAll(items);
+                adapter.notifyDataSetChanged();
+            }
+        }.execute();
+
+    }
+
+    private List<TodoItem> processDataBankComparison() {
+        List<TodoItem> items = new ArrayList<>();
+        TodoItemListAccessor localAccesor = new SQLiteTodoItemListAccessor();
+        ((AbstractActivityDataAccessor)localAccesor).setActivity(this);
+        TodoItemListAccessor remoteAccessor = new RemoteTodoItemListAccessor();
+        ArrayAdapter adapter = localAccesor.getAdapter(new ArrayList<TodoItem>());
+        List<TodoItem> localItems = localAccesor.getAll();
+        Log.e(LOG_TAG, "processDataBankComparison: LOCAL_ITEMS " + localItems );
+        List<TodoItem> remoteItems = remoteAccessor.getAll();
+        Log.e(LOG_TAG, "processDataBankComparison: Remote_ITEMS " + remoteItems );
+
+        if (localItems.size() == 0) {
+            localAccesor.setItems(remoteItems);
+            items = remoteItems;
+        } else {
+            remoteItems.clear();
+            remoteItems.addAll(localItems);
+            remoteAccessor.setItems(localItems);
+            items = localItems;
+        }
+
+
+        return items;
     }
 
     private void processNewItemRequest() {
@@ -205,6 +249,9 @@ public class TodoActivity extends Activity {
 
     }
 
+    private void processItemsUpdate(){
+
+    }
     private void setConnectionStatus(TextView view, String connectionStatus){
         if (connectionStatus.equals("offline")){
             view.setText(" offline ");

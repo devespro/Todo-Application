@@ -18,7 +18,7 @@ import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 public class SQLiteDBHelper{
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     private final Activity mActivity;
 
@@ -70,7 +70,7 @@ public class SQLiteDBHelper{
      * prepare the database
      */
     public void prepareSQLiteDatabase() {
-
+        Log.e(LOG_TAG, "prepareSQLiteDatabase: GETACTIVITY " +getActivity() );
         this.db = getActivity().openOrCreateDatabase(DATABASE_NAME,
                 SQLiteDatabase.CREATE_IF_NECESSARY, null);
 

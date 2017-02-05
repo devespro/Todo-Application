@@ -104,7 +104,15 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
 
     public void setItems(List<TodoItem> items) {
         this.items = items;
-        this.adapter.notifyDataSetChanged();
+        addItemsIntoDB(items);
+    }
+
+    private void addItemsIntoDB(List<TodoItem> items){
+        mHelper = new SQLiteDBHelper(getActivity());
+        mHelper.prepareSQLiteDatabase();
+        for (TodoItem item : items){
+            mHelper.insert(item);
+        }
     }
 
     @Override
