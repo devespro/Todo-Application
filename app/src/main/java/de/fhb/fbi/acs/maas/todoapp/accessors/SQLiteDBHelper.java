@@ -18,7 +18,7 @@ import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 public class SQLiteDBHelper{
 
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private final Activity mActivity;
 
@@ -96,8 +96,8 @@ public class SQLiteDBHelper{
         ContentValues insertItem = new ContentValues();
         insertItem.put(TodoContract.TodoEntry.COLUMN_TITLE, item.getTitle());
         insertItem.put(TodoContract.TodoEntry.COLUMN_DESCRIPTION, item.getDescription());
-        insertItem.put(TodoContract.TodoEntry.COLUMN_ISDONE, item.isDone());
-        insertItem.put(TodoContract.TodoEntry.COLUMN_ISFAVOURITE, item.isFavourite());
+        insertItem.put(TodoContract.TodoEntry.COLUMN_ISDONE, item.isDoneStatus());
+        insertItem.put(TodoContract.TodoEntry.COLUMN_ISFAVOURITE, item.isFavouriteStatus());
         insertItem.put(TodoContract.TodoEntry.COLUMN_DATE, item.getDate());
         insertItem.put(TodoContract.TodoEntry.COLUMN_TIME, item.getTime());
 
@@ -117,8 +117,8 @@ public class SQLiteDBHelper{
         todoItem.setId(cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry._ID)));
         todoItem.setTitle(cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_TITLE)));
         todoItem.setDescription(cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_DESCRIPTION)));
-        todoItem.setIsDone(cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_ISDONE)) > 0);
-        todoItem.setIsFavourite(cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_ISFAVOURITE)) > 0);
+        todoItem.setDoneStatus(cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_ISDONE)) > 0);
+        todoItem.setFavouriteStatus(cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_ISFAVOURITE)) > 0);
         todoItem.setDate(cursor.getLong(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_DATE)));
         todoItem.setTime(cursor.getLong(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_TIME)));
         return todoItem;

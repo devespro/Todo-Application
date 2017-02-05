@@ -33,7 +33,9 @@ public class LoginActivity extends Activity {
     public static final String EMAIL_PATTERN = "[A-Z0-9._%+-]+@[A-Z0-9-]+\\.[A-Z]{2,4}";
     private static final String LOG_TAG = LoginActivity.class.getSimpleName();
     public static final String CONNECTION_STATUS = "connectionStatus";
+    public static final String ACCESSOR_CLASS = "accessorClass";
     private String connectionStatus = "offline";
+    private String accessorClass = "local";
     private static int firstFocus = 0;
 
     /**
@@ -51,7 +53,7 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         if (isServerAvailable()) {
-
+            accessorClass="remote";
             errorTextView = (TextView) findViewById(R.id.error_textview);
             email = (EditText) findViewById(R.id.login_email);
             password = (EditText) findViewById(R.id.login_password);
@@ -185,6 +187,7 @@ public class LoginActivity extends Activity {
     private void startToDoActivity() {
         Intent intent = new Intent(this, TodoActivity.class);
         intent.putExtra(CONNECTION_STATUS, connectionStatus);
+        intent.putExtra(ACCESSOR_CLASS, accessorClass);
         startActivity(intent);
     }
 
@@ -210,15 +213,15 @@ public class LoginActivity extends Activity {
 
     }
 
-    private String getWebappBaseUrl() {
+    public static String getWebappBaseUrl() {
         return "http://10.0.2.2:8080/DataAccessRemoteWebapp/";
     }
 
-    private String getRestBaseUrl() {
+    public static String getRestBaseUrl() {
         return getWebappBaseUrl() + "rest";
     }
 
-    private String getRestLoginBaseUrl() {
+    public static String getRestLoginBaseUrl() {
         return getRestBaseUrl() + "/authentication";
     }
 
@@ -257,6 +260,7 @@ public class LoginActivity extends Activity {
 
             if (response) {
                 startToDoActivity();
+                accessorClass = "remote";
             } else {
                 showErrorMessage();
             }

@@ -1,6 +1,8 @@
 package de.fhb.fbi.acs.maas.todoapp.accessors;
 
-import android.widget.ListAdapter;
+import android.widget.ArrayAdapter;
+
+import java.util.List;
 
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 
@@ -13,32 +15,34 @@ import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
  */
 public interface TodoItemListAccessor {
 
+    List<TodoItem> getAll();
+
     /**
      * add an item to the list
      *
      * @param item
      */
-    void addItem(TodoItem item);
+    TodoItem addItem(TodoItem item);
 
     /**
      * get an adapter for the list
      * @return
      */
-    ListAdapter getAdapter();
+    ArrayAdapter getAdapter(List<TodoItem> todoItemList);
 
     /**
      * update an existing item
      *
      * @param item
      */
-    void updateItem(TodoItem item);
+    TodoItem updateItem(TodoItem item);
 
     /**
      * delete an item
      *
      * @param item
      */
-    void deleteItem(TodoItem item);
+    boolean deleteItem(TodoItem item);
 
     /**
      * determine the item selected by the user given either the position in the
@@ -53,5 +57,7 @@ public interface TodoItemListAccessor {
      * end processing the list of items
      */
     void close();
+
+    void setItems(List<TodoItem> items);
 
 }

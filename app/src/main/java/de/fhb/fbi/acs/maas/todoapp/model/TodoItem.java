@@ -13,28 +13,28 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
 
     private String title;
     private String description;
-    private boolean isDone;
-    private boolean isFavourite;
+    private boolean doneStatus;
+    private boolean favouriteStatus;
     private long date;
     private long time;
 
     private static final long serialVersionUID = -7481912314472891511L;
 
-    public TodoItem(long id, String title, String description, boolean isDone, boolean isFavourite, long date, long time) {
+    public TodoItem(long id, String title, String description, boolean doneStatus, boolean favouriteStatus, long date, long time) {
         this.setId(id == -1 ? ID++ : id);
         this.title = title;
         this.description = description;
-        this.isDone = isDone;
-        this.isFavourite = isFavourite;
+        this.doneStatus = doneStatus;
+        this.favouriteStatus = favouriteStatus;
         this.date = date;
         this.time = time;
     }
 
-    public TodoItem(String title, String description, boolean isDone, boolean isFavourite, long date, long time) {
+    public TodoItem(String title, String description, boolean doneStatus, boolean favouriteStatus, long date, long time) {
         this.title = title;
         this.description = description;
-        this.isDone = isDone;
-        this.isFavourite = isFavourite;
+        this.doneStatus = doneStatus;
+        this.favouriteStatus = favouriteStatus;
         this.date = date;
         this.time = time;
     }
@@ -57,20 +57,22 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
         this.description = description;
     }
 
-    public boolean isDone() {
-        return isDone;
+    public boolean isDoneStatus() {
+        return doneStatus;
     }
 
-    public void setIsDone(boolean isDone) {
-        this.isDone = isDone;
+
+
+    public boolean isFavouriteStatus() {
+        return favouriteStatus;
     }
 
-    public boolean isFavourite() {
-        return isFavourite;
+    public void setDoneStatus(boolean doneStatus) {
+        this.doneStatus = doneStatus;
     }
 
-    public void setIsFavourite(boolean isFavourite) {
-        this.isFavourite = isFavourite;
+    public void setFavouriteStatus(boolean favouriteStatus) {
+        this.favouriteStatus = favouriteStatus;
     }
 
     public long getDate() {
@@ -96,8 +98,8 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
     public void updateFrom(TodoItem item) {
         this.setTitle(item.getTitle());
         this.setDescription(item.getDescription());
-        this.setIsFavourite(item.isFavourite);
-        this.setIsDone(item.isDone);
+        this.setFavouriteStatus(item.favouriteStatus);
+        this.setDoneStatus(item.doneStatus);
         this.setDate(item.getDate());
         this.setTime(item.getTime());
         Log.e("mytag", "updateFrom: #######" + item );
@@ -105,9 +107,9 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
 
     @Override
     public int compareTo(TodoItem another) {
-        if ((this.isDone() && another.isDone()) || (!this.isDone() && !another.isDone()))
+        if ((this.isDoneStatus() && another.isDoneStatus()) || (!this.isDoneStatus() && !another.isDoneStatus()))
             return 0;
-        else if (this.isDone() && !another.isDone()){
+        else if (this.isDoneStatus() && !another.isDoneStatus()){
             return 1;
         } else
             return -1;
@@ -125,9 +127,9 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
                     } else if (lhs.getDate() < rhs.getDate()) {
                         return -1;
                     } else {
-                        if (lhs.isFavourite() && !rhs.isFavourite()){
+                        if (lhs.isFavouriteStatus() && !rhs.isFavouriteStatus()){
                             return -1;
-                        } else if (!lhs.isFavourite() && rhs.isFavourite()){
+                        } else if (!lhs.isFavouriteStatus() && rhs.isFavouriteStatus()){
                             return 1;
                         } else
                             return 0;
@@ -146,9 +148,9 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
 
                 if (result == 0) {
                    {
-                        if (lhs.isFavourite() && !rhs.isFavourite()){
+                        if (lhs.isFavouriteStatus() && !rhs.isFavouriteStatus()){
                             return -1;
-                        } else if (!lhs.isFavourite() && rhs.isFavourite()){
+                        } else if (!lhs.isFavouriteStatus() && rhs.isFavouriteStatus()){
                             return 1;
                         } else {
                             if (lhs.getDate() > rhs.getDate()) {
@@ -170,8 +172,8 @@ public class TodoItem extends GenericEntity implements Serializable, Comparable<
                 "id= " + getId() + "\n" +
                 "title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", isDone=" + isDone +
-                ", isFavourite=" + isFavourite +
+                ", doneStatus=" + doneStatus +
+                ", favouriteStatus=" + favouriteStatus +
                 ", date=" + date +
                 ", time=" + time +
                 '}';

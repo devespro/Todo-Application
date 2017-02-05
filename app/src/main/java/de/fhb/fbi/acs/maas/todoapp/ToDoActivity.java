@@ -2,6 +2,7 @@ package de.fhb.fbi.acs.maas.todoapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -10,18 +11,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.deves.maus.R;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import de.fhb.fbi.acs.maas.todoapp.accessors.AbstractActivityDataAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.IntentTodoItemAccessor;
+import de.fhb.fbi.acs.maas.todoapp.accessors.RemoteTodoItemListAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.SQLiteTodoItemListAccessor;
 import de.fhb.fbi.acs.maas.todoapp.accessors.TodoItemListAccessor;
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
@@ -71,6 +74,15 @@ public class TodoActivity extends Activity {
      */
     private TodoItemListAccessor accessor;
 
+    /**
+     * the items that will be display
+     */
+    private List<TodoItem> itemlist = new ArrayList<>();
+
+    private ArrayAdapter<TodoItem> adapter;
+
+    private String accessorInfo;
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -98,6 +110,7 @@ public class TodoActivity extends Activity {
         setContentView(R.layout.activity_todo);
 
         String connectionStatus = getIntent().getExtras().getString(LoginActivity.CONNECTION_STATUS);
+        accessorInfo = getIntent().getExtras().getString(LoginActivity.ACCESSOR_CLASS);
         Log.e(LOG_TAG, "onCreate: status-> " + connectionStatus);
 
         TextView connectionStatusTextView = (TextView) findViewById(R.id.connection_status);
@@ -107,14 +120,22 @@ public class TodoActivity extends Activity {
         registerForContextMenu(listview);
         // the button for adding new items
         Button newitemButton = (Button) findViewById(R.id.newitemButton);
-        //TODO during rest connection -> remote ItemListAccessor
-        accessor = new SQLiteTodoItemListAccessor();
+
+        if (accessorInfo.equals("local")) {
+            accessor = new SQLiteTodoItemListAccessor();
+        } else {
+            accessor = new RemoteTodoItemListAccessor();
+        }
+        Log.e(LOG_TAG, "onCreate: using accessor -> " + accessor.getClass().getSimpleName() );
+        itemlist = new ArrayList<>();
 
         if (accessor instanceof AbstractActivityDataAccessor) {
             ((AbstractActivityDataAccessor) accessor).setActivity(this);
         }
 
-        final ListAdapter adapter = accessor.getAdapter();
+        adapter = accessor.getAdapter(itemlist);
+        // the adapter is set to display changes immediately
+        adapter.setNotifyOnChange(true);
         listview.setAdapter(adapter);
 
         listview.setScrollBarStyle(ListView.SCROLLBARS_INSIDE_OVERLAY);
@@ -140,6 +161,22 @@ public class TodoActivity extends Activity {
                 processNewItemRequest();
             }
         });
+
+        // finally, we add the itemlist asynchronously
+        new AsyncTask<Void, Void, List<TodoItem>>() {
+            @Override
+            protected List<TodoItem> doInBackground(Void... items) {
+                Log.e(LOG_TAG, "onPostExecute: INSIDE_ON_BACKGROUND" );
+                return TodoActivity.this.accessor.getAll();
+            }
+
+            @Override
+            protected void onPostExecute(List<TodoItem> items) {
+                Log.e(LOG_TAG, "onPostExecute: INSIDE_ONPOST" );
+                itemlist.addAll(items);
+                adapter.notifyDataSetChanged();
+            }
+        }.execute();
 
     }
 
@@ -190,17 +227,34 @@ public class TodoActivity extends Activity {
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        List<TodoItem> items = ((SQLiteTodoItemListAccessor)accessor).getItems();
+        List<TodoItem> items;
+        if (accessor instanceof SQLiteTodoItemListAccessor) {
+            items = accessor.getAll();
+        } else {
+            items = getRemoteAll((RemoteTodoItemListAccessor)accessor);
+        }
         int id = item.getItemId();
         switch (id){
             case R.id.sort_date_fav: {
+                if (accessor instanceof RemoteTodoItemListAccessor){
+                    processRemoteSortByDateAndFavourite(items);
+                    Log.e(LOG_TAG, "Sorting : sort_date_fav");
+                    accessor.setItems(items);
+                    return true;
+                }
                 sortItemsByDateAndFavourite(items);
-                ((SQLiteTodoItemListAccessor) accessor).setItems(items);
+                accessor.setItems(items);
                 return true;
             }
             case R.id.sort_fav_date : {
+                if (accessor instanceof RemoteTodoItemListAccessor){
+                    processRemoteSortByFavouriteAndDate(items);
+                    Log.e(LOG_TAG, "Sorting : sort_fav_date");
+                    accessor.setItems(items);
+                    return true;
+                }
                 sortItemsByFavouriteAndDate(items);
-                ((SQLiteTodoItemListAccessor) accessor).setItems(items);
+                accessor.setItems(items);
                 return true;
             }
             default:
@@ -217,24 +271,77 @@ public class TodoActivity extends Activity {
     private void sortItemsByFavouriteAndDate(List<TodoItem> items){
         Collections.sort(items, TodoItem.sortByFavouriteAndDateComparator());
     }
+
+    private void processRemoteSortByDateAndFavourite(final List<TodoItem> items){
+        Log.e(LOG_TAG, "processRemoteSortByDateAndFavourite: ITEMS_BEFORE " + items );
+        new AsyncTask<List<TodoItem>, Void, List<TodoItem>>() {
+            @Override
+            protected List<TodoItem> doInBackground(final List<TodoItem>... params) {
+                Collections.sort(params[0], TodoItem.sortByDateAndFavouriteComparator());
+                return params[0];
+            }
+
+            @Override
+            protected void onPostExecute(List<TodoItem> todoItemList) {
+                super.onPostExecute(todoItemList);
+                items.clear();
+                items.addAll(todoItemList);
+                adapter.notifyDataSetChanged();
+            }
+        }.execute(items);
+        Log.e(LOG_TAG, "processRemoteSortByDateAndFavourite: ITEMS_AFTER " + items);
+    }
+
+    private List<TodoItem> getRemoteAll(final RemoteTodoItemListAccessor accessor){
+        final List<TodoItem> list = new ArrayList<>();
+        new AsyncTask<Void, Void, List<TodoItem>>() {
+            @Override
+            protected List<TodoItem> doInBackground(Void... params) {
+                return accessor.getAll();
+            }
+
+            @Override
+            protected void onPostExecute(List<TodoItem> todoItemList) {
+                list.addAll(todoItemList);
+            }
+        }.execute();
+        Log.e(LOG_TAG, "processRemoteSortByDateAndFavourite: ITEMS_AFTRERR " + list);
+        return list;
+    }
+
+    private void processRemoteSortByFavouriteAndDate(List<TodoItem> items){
+
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         Log.i(LOG_TAG, "onActivityResult(): " + data);
 
         TodoItem item = data != null ? (TodoItem) data.getSerializableExtra(ARG_ITEM_OBJECT) : null;
+        boolean onlineMode = !accessorInfo.equals("local");
         // check which request we had
         if (requestCode == REQUEST_ITEM_DETAILS) {
             if (resultCode == RESPONSE_ITEM_EDITED) {
-                Log.i(LOG_TAG, "onActivityResult(): updating the edited item with CHECKBOX " + item.isFavourite());
+                if (onlineMode){
+                    processRemoteItemUpdate(item);
+                    return;
+                }
                 this.accessor.updateItem(item);
             } else if (resultCode == RESPONSE_ITEM_DELETED) {
                 Log.e(LOG_TAG, "onActivityResult(): ITEM TO DELETE -> " + item.getId());
+                if (onlineMode){
+                    processRemoteItemDeleted(item);
+                    return;
+                }
                 this.accessor.deleteItem(item);
             }
         } else if (requestCode == REQUEST_ITEM_CREATION
                 && resultCode == RESPONSE_ITEM_EDITED) {
             Log.i(LOG_TAG, "onActivityResult(): adding the created item");
+            if (onlineMode){
+                processRemoteItemAdd(item);
+                return;
+            }
             this.accessor.addItem(item);
         }
     }
@@ -248,5 +355,65 @@ public class TodoActivity extends Activity {
         this.accessor.close();
 
         super.onStop();
+    }
+
+    private void processRemoteItemAdd(TodoItem item){
+        Log.e(LOG_TAG, "processRemoteItemAdd: " + item);
+        new AsyncTask<TodoItem, Void, TodoItem>() {
+            @Override
+            protected TodoItem doInBackground(TodoItem... items) {
+                return TodoActivity.this.accessor.addItem(items[0]);
+            }
+
+            @Override
+            protected void onPostExecute(TodoItem item) {
+                if (item != null) {
+                    adapter.add(item);
+                }
+            }
+        }.execute(item);
+    }
+
+    public void processRemoteItemUpdate(TodoItem item){
+        Log.e(LOG_TAG, "processRemoteItemUpdate: " + item);
+        new AsyncTask<TodoItem, Void, TodoItem>() {
+            @Override
+            protected TodoItem doInBackground(TodoItem... items) {
+                return TodoActivity.this.accessor
+                        .updateItem(items[0]);
+            }
+
+            @Override
+            protected void onPostExecute(TodoItem item) {
+                if (item != null) {
+                    // read out the item from the list and update it
+                    itemlist.get(itemlist.indexOf(item)).updateFrom(item);
+                    // notify the adapter that the item has been changed
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }.execute(item);
+    }
+
+    private void processRemoteItemDeleted(TodoItem item){
+        new AsyncTask<TodoItem, Void, TodoItem>() {
+            @Override
+            protected TodoItem doInBackground(TodoItem... items) {
+                if (TodoActivity.this.accessor.deleteItem(items[0])) {
+                    return items[0];
+                } else {
+                    Log.e(LOG_TAG, "the item" + items[0]
+                            + " could not be deleted by the accessor!");
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(TodoItem item) {
+                if (item != null) {
+                    adapter.remove(item);
+                }
+            }
+        }.execute(item);
     }
 }

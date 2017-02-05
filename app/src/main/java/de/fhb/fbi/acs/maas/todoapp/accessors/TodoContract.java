@@ -39,8 +39,8 @@ public class TodoContract {
         public static final String TABLE_NAME = "todolist";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_DESCRIPTION = "description";
-        public static final String COLUMN_ISDONE = "isDone";
-        public static final String COLUMN_ISFAVOURITE = "isFavourite";
+        public static final String COLUMN_ISDONE = "isDoneStatus";
+        public static final String COLUMN_ISFAVOURITE = "isFavouriteStatus";
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_TIME = "time";
 

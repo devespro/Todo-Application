@@ -3,7 +3,6 @@ package de.fhb.fbi.acs.maas.todoapp.accessors;
 import android.database.Cursor;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,27 +30,28 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
     private SQLiteDBHelper mHelper;
 
     @Override
-    public void addItem(TodoItem item) {
+    public TodoItem addItem(TodoItem item) {
         mHelper.insert(item);
         this.adapter.add(item);
         Collections.sort(getItems());
+        return item;
     }
 
     @Override
-    public ListAdapter getAdapter() {
+    public ArrayAdapter getAdapter(List<TodoItem> newItems) {
         mHelper = new SQLiteDBHelper(getActivity());
         mHelper.prepareSQLiteDatabase();
 
-        readOutItemsFromDatabase();
+        newItems = readOutItemsFromDatabase();
 
-        Collections.sort(items);
-        this.adapter = TodoItemListViews.createTodoItemArrayAdapter(getActivity(),items);
+        Collections.sort(newItems);
+        this.adapter = TodoItemListViews.createTodoItemArrayAdapter(getActivity(),newItems);
         this.adapter.setNotifyOnChange(true);
 
         return this.adapter;
     }
 
-    private void readOutItemsFromDatabase(){
+    private List<TodoItem> readOutItemsFromDatabase(){
         Cursor cursor = mHelper.getCursor();
 
         Log.i(LOG_TAG, "getAdapter(): got a cursor: " + cursor);
@@ -64,21 +64,24 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
         }
 
         Log.i(LOG_TAG, "readOutItemsFromDatabase(): read out items: " + this.items);
+        return items;
     }
 
     @Override
-    public void updateItem(TodoItem item) {
+    public TodoItem updateItem(TodoItem item) {
         mHelper.update(item);
         Log.i(LOG_TAG, "updateItem: updating  " + item);
         lookupItem(item).updateFrom(item);
         this.adapter.notifyDataSetChanged();
+        return item;
 
     }
 
     @Override
-    public void deleteItem(TodoItem item) {
+    public boolean deleteItem(TodoItem item) {
         mHelper.delete(item);
         this.adapter.remove(lookupItem(item));
+        return true;
     }
 
     /*
@@ -112,5 +115,10 @@ public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor imp
     @Override
     public void close() {
         mHelper.close();
+    }
+
+    @Override
+    public List<TodoItem> getAll() {
+        return getItems();
     }
 }

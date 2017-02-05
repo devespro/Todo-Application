@@ -91,8 +91,8 @@ public class ItemDetailsActivity extends Activity {
             TodoItem item = accessor.readItem();
             viewHolder.itemTitle.setText(item.getTitle());
             viewHolder.itemDescription.setText(item.getDescription());
-            viewHolder.itemIsFavourite.setChecked(item.isFavourite());
-            viewHolder.itemIsDone.setChecked(item.isDone());
+            viewHolder.itemIsFavourite.setChecked(item.isFavouriteStatus());
+            viewHolder.itemIsDone.setChecked(item.isDoneStatus());
             viewHolder.timeAsText.setText(TodoUtility.formatTime(item.getTime()));
 
             if (item.getTime() > 0) {
@@ -148,8 +148,8 @@ public class ItemDetailsActivity extends Activity {
         TodoItem item = accessor.readItem();
         item.setTitle(viewHolder.itemTitle.getText().toString());
         item.setDescription(viewHolder.itemDescription.getText().toString());
-        item.setIsDone(viewHolder.itemIsDone.isChecked());
-        item.setIsFavourite(viewHolder.itemIsFavourite.isChecked());
+        item.setDoneStatus(viewHolder.itemIsDone.isChecked());
+        item.setFavouriteStatus(viewHolder.itemIsFavourite.isChecked());
 
         if (isDateChanged(viewHolder)) {
             GregorianCalendar calendar = new GregorianCalendar(viewHolder.itemDate.getYear(), viewHolder.itemDate.getMonth(), viewHolder.itemDate.getDayOfMonth());
