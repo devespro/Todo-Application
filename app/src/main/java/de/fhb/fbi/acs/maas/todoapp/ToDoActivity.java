@@ -100,7 +100,19 @@ public class TodoActivity extends Activity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int listPosition = info.position;
         TodoItem item1 = accessor.getSelectedItem(listPosition);
-        Log.e(LOG_TAG, "onContextItemSelected: id-> " + item1.getId());
+        String itemTitle = item.getTitle().toString();
+        switch (itemTitle) {
+            case "Cancel":
+                break;
+            case "Edit" :
+                processItemSelection(item1);
+                break;
+            case "Delete":
+                accessor.deleteItem(item1);
+                break;
+            default:
+                break;
+        }
         return false;
     }
 

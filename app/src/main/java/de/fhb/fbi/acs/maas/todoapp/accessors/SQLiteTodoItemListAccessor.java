@@ -11,7 +11,7 @@ import java.util.List;
 import de.fhb.fbi.acs.maas.todoapp.model.TodoItem;
 
 /**
- * @author novruzov
+ * @author Martin Schafföner
  */
 public class SQLiteTodoItemListAccessor extends AbstractActivityDataAccessor implements TodoItemListAccessor {
 
