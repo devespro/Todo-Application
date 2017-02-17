@@ -1,9 +1,10 @@
 # Todo-Application
-An university project (Android)
 The final project in Android course at the University of Applied Sciences Brandenburg.
 The Android TODO application fulfill the following requirements:
 - if no internet is available -> uses of local SQLite Database
 - if internet is available -> uses a server for each read/write operation
+- loging check if server is available (REST)
+- a loader spinner is shown during data validation on the server side
 - comminucation with a server via REST API
 - the app allow the user to save a title, a description, time, date, set favourite and 'done' checkbox
 - all network tasks are performed asynchronously 
